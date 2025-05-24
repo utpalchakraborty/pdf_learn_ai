@@ -110,11 +110,11 @@ export default function AIPanel({ filename, currentPage }: AIPanelProps) {
   const getStatusIndicator = () => {
     switch (aiStatus) {
       case 'connected':
-        return <span className="text-green-600 text-sm">● AI Connected</span>;
+        return <span className="text-green-400 text-sm">● AI Connected</span>;
       case 'error':
-        return <span className="text-red-600 text-sm">● AI Offline</span>;
+        return <span className="text-red-400 text-sm">● AI Offline</span>;
       default:
-        return <span className="text-gray-600 text-sm">● Checking...</span>;
+        return <span className="text-gray-400 text-sm">● Checking...</span>;
     }
   };
 
@@ -122,75 +122,75 @@ export default function AIPanel({ filename, currentPage }: AIPanelProps) {
     code: ({ className, children, ...props }) => {
       const match = /language-(\w+)/.exec(className || '');
       return (
-        <code className={`${className} bg-gray-100 px-1 py-0.5 rounded text-xs font-mono`} {...props}>
+        <code className={`${className} bg-gray-700 text-gray-200 px-1 py-0.5 rounded text-xs font-mono`} {...props}>
           {children}
         </code>
       );
     },
     pre: ({ children }) => (
-      <pre className="bg-gray-100 p-3 rounded-md overflow-x-auto text-xs border">
+      <pre className="bg-gray-700 text-gray-200 p-3 rounded-md overflow-x-auto text-xs border border-gray-600">
         {children}
       </pre>
     ),
     h1: ({ children }) => (
-      <h1 className="text-lg font-bold text-gray-900 mt-4 mb-2 first:mt-0">
+      <h1 className="text-lg font-bold text-gray-100 mt-4 mb-2 first:mt-0">
         {children}
       </h1>
     ),
     h2: ({ children }) => (
-      <h2 className="text-base font-bold text-gray-900 mt-3 mb-2 first:mt-0">
+      <h2 className="text-base font-bold text-gray-100 mt-3 mb-2 first:mt-0">
         {children}
       </h2>
     ),
     h3: ({ children }) => (
-      <h3 className="text-sm font-bold text-gray-900 mt-2 mb-1 first:mt-0">
+      <h3 className="text-sm font-bold text-gray-100 mt-2 mb-1 first:mt-0">
         {children}
       </h3>
     ),
     p: ({ children }) => (
-      <p className="text-sm text-gray-800 leading-relaxed mb-2">
+      <p className="text-sm text-gray-300 leading-relaxed mb-2">
         {children}
       </p>
     ),
     ul: ({ children }) => (
-      <ul className="text-sm text-gray-800 mb-2 pl-4 space-y-1">
+      <ul className="text-sm text-gray-300 mb-2 pl-4 space-y-1">
         {children}
       </ul>
     ),
     ol: ({ children }) => (
-      <ol className="text-sm text-gray-800 mb-2 pl-4 space-y-1">
+      <ol className="text-sm text-gray-300 mb-2 pl-4 space-y-1">
         {children}
       </ol>
     ),
     blockquote: ({ children }) => (
-      <blockquote className="border-l-4 border-blue-500 pl-3 py-1 bg-blue-50 text-sm text-gray-700 italic">
+      <blockquote className="border-l-4 border-blue-500 pl-3 py-1 bg-blue-900/30 text-sm text-gray-300 italic">
         {children}
       </blockquote>
     ),
   } as Components;
 
   return (
-    <div className="h-full flex flex-col bg-white">
+    <div className="h-full flex flex-col bg-gray-900">
       {/* Header */}
-      <div className="border-b px-4 py-3">
+      <div className="border-b border-gray-700 px-4 py-3">
         <div className="flex items-center justify-between mb-2">
-          <h2 className="text-lg font-semibold">AI Analysis</h2>
+          <h2 className="text-lg font-semibold text-gray-100">AI Analysis</h2>
           {getStatusIndicator()}
         </div>
         <div className="flex items-center justify-between">
-          <label className="flex items-center text-sm">
+          <label className="flex items-center text-sm text-gray-300">
             <input
               type="checkbox"
               checked={autoAnalyze}
               onChange={(e) => setAutoAnalyze(e.target.checked)}
-              className="mr-2"
+              className="mr-2 bg-gray-700 border-gray-600 text-blue-500 focus:ring-blue-500"
             />
             Auto-analyze pages
           </label>
           <button
             onClick={analyzeCurrentPage}
             disabled={loading || streaming || !filename || aiStatus === 'error'}
-            className="px-4 py-2 bg-green-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed text-sm"
+            className="px-4 py-2 bg-green-600 text-white rounded disabled:bg-gray-600 disabled:cursor-not-allowed text-sm hover:bg-green-500 transition-colors"
           >
             {loading || streaming ? 'Analyzing...' : 'Analyze Page'}
           </button>
@@ -200,18 +200,18 @@ export default function AIPanel({ filename, currentPage }: AIPanelProps) {
       {/* Content */}
       <div className="flex-1 overflow-auto p-4">
         {!filename ? (
-          <div className="text-gray-500 text-center mt-8">
+          <div className="text-gray-400 text-center mt-8">
             Open a PDF to get AI insights
           </div>
         ) : aiStatus === 'error' ? (
           <div className="text-center mt-8">
-            <div className="text-red-600 mb-2">AI service is not available</div>
-            <div className="text-sm text-gray-500 mb-4">
+            <div className="text-red-400 mb-2">AI service is not available</div>
+            <div className="text-sm text-gray-400 mb-4">
               Make sure Ollama is running with qwen3-30b model at localhost:11434
             </div>
             <button
               onClick={checkAIConnection}
-              className="px-4 py-2 bg-blue-500 text-white rounded text-sm"
+              className="px-4 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-500 transition-colors"
             >
               Retry Connection
             </button>
@@ -220,11 +220,11 @@ export default function AIPanel({ filename, currentPage }: AIPanelProps) {
           <div className="space-y-4">
             {/* Streaming indicator */}
             {streaming && (
-              <div className="flex items-center space-x-2 text-sm text-blue-600 bg-blue-50 p-2 rounded">
+              <div className="flex items-center space-x-2 text-sm text-blue-400 bg-blue-900/30 p-2 rounded">
                 <div className="flex space-x-1">
-                  <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                  <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                  <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
                 </div>
                 <span>AI is analyzing...</span>
               </div>
@@ -243,14 +243,14 @@ export default function AIPanel({ filename, currentPage }: AIPanelProps) {
 
             {/* Thinking Panel */}
             {thinkingContent && (
-              <div className="border-t pt-4">
+              <div className="border-t border-gray-700 pt-4">
                 <button
                   onClick={() => setShowThinking(!showThinking)}
-                  className="flex items-center justify-between w-full px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded-md text-sm font-medium text-gray-700 transition-colors"
+                  className="flex items-center justify-between w-full px-3 py-2 bg-gray-800 hover:bg-gray-700 rounded-md text-sm font-medium text-gray-200 transition-colors"
                 >
                   <span className="flex items-center">
                     🧠 AI Thinking Process
-                    <span className="ml-2 text-xs text-gray-500">
+                    <span className="ml-2 text-xs text-gray-400">
                       ({thinkingContent.length} chars)
                     </span>
                   </span>
@@ -265,7 +265,7 @@ export default function AIPanel({ filename, currentPage }: AIPanelProps) {
                 </button>
 
                 {showThinking && (
-                  <div className="mt-3 p-3 bg-gray-50 rounded-md border">
+                  <div className="mt-3 p-3 bg-gray-800 rounded-md border border-gray-700">
                     <div className="prose prose-sm prose-gray max-w-none">
                       <ReactMarkdown
                         remarkPlugins={[remarkGfm]}
@@ -273,17 +273,17 @@ export default function AIPanel({ filename, currentPage }: AIPanelProps) {
                         components={{
                           ...markdownComponents,
                           p: ({ children }) => (
-                            <p className="text-xs text-gray-600 leading-relaxed mb-2">
+                            <p className="text-xs text-gray-400 leading-relaxed mb-2">
                               {children}
                             </p>
                           ),
                           h1: ({ children }) => (
-                            <h1 className="text-sm font-bold text-gray-700 mt-3 mb-2 first:mt-0">
+                            <h1 className="text-sm font-bold text-gray-300 mt-3 mb-2 first:mt-0">
                               {children}
                             </h1>
                           ),
                           h2: ({ children }) => (
-                            <h2 className="text-xs font-bold text-gray-700 mt-2 mb-1 first:mt-0">
+                            <h2 className="text-xs font-bold text-gray-300 mt-2 mb-1 first:mt-0">
                               {children}
                             </h2>
                           ),
@@ -298,7 +298,7 @@ export default function AIPanel({ filename, currentPage }: AIPanelProps) {
             )}
           </div>
         ) : (
-          <div className="text-gray-500 text-center mt-8">
+          <div className="text-gray-400 text-center mt-8">
             {autoAnalyze
               ? 'Auto-analysis enabled. Change pages to see insights.'
               : 'Click "Analyze Page" to get AI insights about the current page'

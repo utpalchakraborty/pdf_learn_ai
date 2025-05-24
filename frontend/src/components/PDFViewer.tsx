@@ -55,40 +55,40 @@ export default function PDFViewer({ filename, currentPage, onPageChange }: PDFVi
 
   if (!filename) {
     return (
-      <div className="h-full flex items-center justify-center bg-gray-50">
-        <p className="text-gray-500">No PDF selected</p>
+      <div className="h-full flex items-center justify-center bg-gray-900">
+        <p className="text-gray-400">No PDF selected</p>
       </div>
     );
   }
 
   return (
-    <div className="h-full flex flex-col bg-gray-50">
+    <div className="h-full flex flex-col bg-gray-900">
       {/* Header with navigation */}
-      <div className="bg-white border-b px-4 py-3 flex items-center justify-between">
-        <h1 className="text-lg font-semibold truncate">{filename}</h1>
+      <div className="bg-gray-800 border-b border-gray-700 px-4 py-3 flex items-center justify-between">
+        <h1 className="text-lg font-semibold text-gray-100 truncate">{filename}</h1>
         <div className="flex items-center gap-4">
           {/* Zoom controls */}
           <div className="flex items-center gap-2">
             <button
               onClick={zoomOut}
               disabled={scale <= 0.5}
-              className="px-3 py-1 bg-gray-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed"
+              className="px-3 py-1 bg-gray-600 text-gray-200 rounded disabled:bg-gray-500 disabled:text-gray-400 disabled:cursor-not-allowed hover:bg-gray-500 transition-colors"
             >
               Zoom Out
             </button>
-            <span className="text-sm text-gray-600 min-w-16 text-center">
+            <span className="text-sm text-gray-300 min-w-16 text-center">
               {Math.round(scale * 100)}%
             </span>
             <button
               onClick={zoomIn}
               disabled={scale >= 3.0}
-              className="px-3 py-1 bg-gray-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed"
+              className="px-3 py-1 bg-gray-600 text-gray-200 rounded disabled:bg-gray-500 disabled:text-gray-400 disabled:cursor-not-allowed hover:bg-gray-500 transition-colors"
             >
               Zoom In
             </button>
             <button
               onClick={resetZoom}
-              className="px-3 py-1 bg-gray-600 text-white rounded"
+              className="px-3 py-1 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 transition-colors"
             >
               Reset
             </button>
@@ -99,17 +99,17 @@ export default function PDFViewer({ filename, currentPage, onPageChange }: PDFVi
             <button
               onClick={goToPrevPage}
               disabled={currentPage <= 1}
-              className="px-3 py-1 bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed"
+              className="px-3 py-1 bg-blue-600 text-white rounded disabled:bg-gray-500 disabled:text-gray-400 disabled:cursor-not-allowed hover:bg-blue-500 transition-colors"
             >
               Previous
             </button>
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-gray-300">
               {loading ? '...' : `${currentPage} of ${numPages}`}
             </span>
             <button
               onClick={goToNextPage}
               disabled={currentPage >= numPages}
-              className="px-3 py-1 bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed"
+              className="px-3 py-1 bg-blue-600 text-white rounded disabled:bg-gray-500 disabled:text-gray-400 disabled:cursor-not-allowed hover:bg-blue-500 transition-colors"
             >
               Next
             </button>
@@ -118,12 +118,12 @@ export default function PDFViewer({ filename, currentPage, onPageChange }: PDFVi
       </div>
 
       {/* PDF Content */}
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto bg-gray-800">
         {error ? (
           <div className="h-full flex items-center justify-center">
             <div className="text-center">
-              <p className="text-red-600 mb-2">Error loading PDF</p>
-              <p className="text-sm text-gray-500">{error}</p>
+              <p className="text-red-400 mb-2">Error loading PDF</p>
+              <p className="text-sm text-gray-400">{error}</p>
             </div>
           </div>
         ) : (
@@ -134,7 +134,7 @@ export default function PDFViewer({ filename, currentPage, onPageChange }: PDFVi
               onLoadError={onDocumentLoadError}
               loading={
                 <div className="flex items-center justify-center h-96">
-                  <div className="text-gray-500">Loading PDF...</div>
+                  <div className="text-gray-400">Loading PDF...</div>
                 </div>
               }
             >
