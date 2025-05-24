@@ -1,4 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeHighlight from 'rehype-highlight';
+import 'highlight.js/styles/github.css';
+import type { Components } from 'react-markdown';
 import { chatService } from '../services/api';
 
 interface Message {
@@ -95,6 +100,57 @@ export default function ChatInterface({ filename, currentPage }: ChatInterfacePr
     }
   };
 
+  const markdownComponents = {
+    code: ({ className, children, ...props }) => {
+      const match = /language-(\w+)/.exec(className || '');
+      return (
+        <code className={`${className} bg-gray-600 text-gray-100 px-1 py-0.5 rounded text-xs font-mono`} {...props}>
+          {children}
+        </code>
+      );
+    },
+    pre: ({ children }) => (
+      <pre className="bg-gray-600 text-gray-100 p-2 rounded-md overflow-x-auto text-xs border border-gray-500">
+        {children}
+      </pre>
+    ),
+    h1: ({ children }) => (
+      <h1 className="text-base font-bold text-gray-100 mt-3 mb-2 first:mt-0">
+        {children}
+      </h1>
+    ),
+    h2: ({ children }) => (
+      <h2 className="text-sm font-bold text-gray-100 mt-2 mb-1 first:mt-0">
+        {children}
+      </h2>
+    ),
+    h3: ({ children }) => (
+      <h3 className="text-xs font-bold text-gray-100 mt-2 mb-1 first:mt-0">
+        {children}
+      </h3>
+    ),
+    p: ({ children }) => (
+      <p className="text-sm text-gray-200 leading-relaxed mb-1">
+        {children}
+      </p>
+    ),
+    ul: ({ children }) => (
+      <ul className="text-sm text-gray-200 mb-1 pl-3 space-y-0.5">
+        {children}
+      </ul>
+    ),
+    ol: ({ children }) => (
+      <ol className="text-sm text-gray-200 mb-1 pl-3 space-y-0.5">
+        {children}
+      </ol>
+    ),
+    blockquote: ({ children }) => (
+      <blockquote className="border-l-2 border-blue-400 pl-2 py-0.5 bg-blue-900/20 text-sm text-gray-200 italic">
+        {children}
+      </blockquote>
+    ),
+  } as Components;
+
   return (
     <div className="h-80 flex flex-col bg-gray-900 border-t border-gray-700">
       {/* Header */}
@@ -118,11 +174,23 @@ export default function ChatInterface({ filename, currentPage }: ChatInterfacePr
             >
               <div
                 className={`max-w-xs lg:max-w-md px-3 py-2 rounded-lg text-sm ${message.isUser
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-700 text-gray-200'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-700 text-gray-200'
                   }`}
               >
-                {message.text}
+                {message.isUser ? (
+                  message.text
+                ) : (
+                  <div className="prose prose-sm prose-gray max-w-none">
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      rehypePlugins={[rehypeHighlight]}
+                      components={markdownComponents}
+                    >
+                      {message.text}
+                    </ReactMarkdown>
+                  </div>
+                )}
               </div>
             </div>
           ))

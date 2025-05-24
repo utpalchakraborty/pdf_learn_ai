@@ -45,8 +45,7 @@ Provide a helpful analysis that will aid in understanding this content."""
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt}
                 ],
-                temperature=0.7,
-                max_tokens=1000
+                temperature=0.7
             )
             
             return response.choices[0].message.content.strip()
@@ -58,7 +57,8 @@ Provide a helpful analysis that will aid in understanding this content."""
         """
         Stream chat responses about the PDF content
         """
-        system_prompt = f"""You are an intelligent study assistant helping a user understand a PDF document. 
+        system_prompt = f"""/no_think 
+        You are an intelligent study assistant helping a user understand a PDF document. 
 
 Current context:
 - Document: {filename}
@@ -157,7 +157,6 @@ Provide a helpful analysis that will aid in understanding this content."""
                     {"role": "user", "content": user_prompt}
                 ],
                 temperature=0.7,
-                max_tokens=1000,
                 stream=True
             )
             
