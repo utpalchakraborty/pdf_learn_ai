@@ -121,3 +121,49 @@ Keep responses conversational but informative."""
                 "status": "error",
                 "error": str(e)
             }
+
+    async def analyze_page_stream(self, text: str, filename: str, page_num: int, context: str = "") -> AsyncGenerator[str, None]:
+        """
+        Analyze a PDF page using AI with streaming response
+        """
+        system_prompt = """/no_think 
+        
+        You are an intelligent study assistant. Your role is to help users understand PDF documents by providing clear, insightful analysis of the content.
+
+When analyzing a page, you should:
+1. Summarize the key points and main ideas
+2. Explain any complex concepts in simpler terms
+3. Highlight important information or insights
+4. Provide context or background knowledge when helpful
+5. Point out connections to other concepts or fields
+6. Suggest questions the reader might want to explore further
+
+Keep your analysis concise but thorough, and focus on enhancing understanding rather than just repeating the content."""
+
+        user_prompt = f"""Please analyze page {page_num} of the document "{filename}".
+
+{f"Additional context: {context}" if context else ""}
+
+Page content:
+{text}
+
+Provide a helpful analysis that will aid in understanding this content."""
+
+        try:
+            stream = await self.client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt}
+                ],
+                temperature=0.7,
+                max_tokens=1000,
+                stream=True
+            )
+            
+            async for chunk in stream:
+                if chunk.choices[0].delta.content:
+                    yield chunk.choices[0].delta.content
+                    
+        except Exception as e:
+            yield f"Error: {str(e)}"

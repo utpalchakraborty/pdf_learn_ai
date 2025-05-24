@@ -16,6 +16,7 @@ export default function AIPanel({ filename, currentPage }: AIPanelProps) {
   const [thinkingContent, setThinkingContent] = useState<string>('');
   const [showThinking, setShowThinking] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [streaming, setStreaming] = useState(false);
   const [autoAnalyze, setAutoAnalyze] = useState(false);
   const [aiStatus, setAiStatus] = useState<'unknown' | 'connected' | 'error'>('unknown');
 
@@ -63,15 +64,38 @@ export default function AIPanel({ filename, currentPage }: AIPanelProps) {
     if (!filename) return;
 
     setLoading(true);
+    setStreaming(true);
+    setAnalysis('');
+    setThinkingContent('');
+
     try {
-      const result = await aiService.analyzePage(filename, currentPage);
+      let fullAnalysis = '';
+      let textExtracted = true;
 
-      const { mainContent, thinking } = parseAnalysisContent(result.analysis);
-      setAnalysis(mainContent);
-      setThinkingContent(thinking);
+      for await (const chunk of aiService.streamAnalyzePage(filename, currentPage)) {
+        if (chunk.error) {
+          throw new Error(chunk.error);
+        }
 
-      if (!result.text_extracted) {
-        setAnalysis(mainContent + '\n\n💡 Tip: This page might contain images, diagrams, or special formatting that requires visual analysis.');
+        if (chunk.content) {
+          fullAnalysis += chunk.content;
+          // Update the analysis in real-time as we receive chunks
+          const { mainContent, thinking } = parseAnalysisContent(fullAnalysis);
+          setAnalysis(mainContent);
+          setThinkingContent(thinking);
+        }
+
+        if (chunk.text_extracted !== undefined) {
+          textExtracted = chunk.text_extracted;
+        }
+
+        if (chunk.done) {
+          break;
+        }
+      }
+
+      if (!textExtracted) {
+        setAnalysis(prev => prev + '\n\n💡 Tip: This page might contain images, diagrams, or special formatting that requires visual analysis.');
       }
     } catch (error) {
       console.error('Analysis failed:', error);
@@ -79,6 +103,7 @@ export default function AIPanel({ filename, currentPage }: AIPanelProps) {
       setThinkingContent('');
     } finally {
       setLoading(false);
+      setStreaming(false);
     }
   };
 
@@ -164,10 +189,10 @@ export default function AIPanel({ filename, currentPage }: AIPanelProps) {
           </label>
           <button
             onClick={analyzeCurrentPage}
-            disabled={loading || !filename || aiStatus === 'error'}
+            disabled={loading || streaming || !filename || aiStatus === 'error'}
             className="px-4 py-2 bg-green-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed text-sm"
           >
-            {loading ? 'Analyzing...' : 'Analyze Page'}
+            {loading || streaming ? 'Analyzing...' : 'Analyze Page'}
           </button>
         </div>
       </div>
@@ -193,6 +218,18 @@ export default function AIPanel({ filename, currentPage }: AIPanelProps) {
           </div>
         ) : analysis ? (
           <div className="space-y-4">
+            {/* Streaming indicator */}
+            {streaming && (
+              <div className="flex items-center space-x-2 text-sm text-blue-600 bg-blue-50 p-2 rounded">
+                <div className="flex space-x-1">
+                  <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                  <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                  <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                </div>
+                <span>AI is analyzing...</span>
+              </div>
+            )}
+
             {/* Main Analysis */}
             <div className="prose prose-sm prose-gray max-w-none">
               <ReactMarkdown

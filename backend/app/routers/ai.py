@@ -75,6 +75,63 @@ async def analyze_page(request: AnalyzePageRequest) -> Dict[str, Any]:
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
 
+@router.post("/analyze/stream")
+async def analyze_page_stream(request: AnalyzePageRequest):
+    """
+    Analyze a specific page of a PDF using AI with streaming response
+    """
+    try:
+        # Extract text from the PDF page
+        page_text = pdf_service.extract_page_text(request.filename, request.page_num)
+        
+        if not page_text.strip():
+            async def generate_empty_response():
+                yield f"data: {json.dumps({'content': 'This page appears to be empty or contains no extractable text. It might contain only images, diagrams, or formatted elements that could not be processed.', 'text_extracted': False})}\n\n"
+                yield f"data: {json.dumps({'done': True})}\n\n"
+            
+            return StreamingResponse(
+                generate_empty_response(),
+                media_type="text/plain",
+                headers={
+                    "Cache-Control": "no-cache",
+                    "Connection": "keep-alive",
+                    "Content-Type": "text/event-stream"
+                }
+            )
+        
+        async def generate_analysis():
+            try:
+                async for chunk in ollama_service.analyze_page_stream(
+                    text=page_text,
+                    filename=request.filename,
+                    page_num=request.page_num,
+                    context=request.context
+                ):
+                    yield f"data: {json.dumps({'content': chunk, 'text_extracted': True})}\n\n"
+                
+                # Send end-of-stream marker
+                yield f"data: {json.dumps({'done': True})}\n\n"
+                
+            except Exception as e:
+                yield f"data: {json.dumps({'error': str(e)})}\n\n"
+        
+        return StreamingResponse(
+            generate_analysis(),
+            media_type="text/plain",
+            headers={
+                "Cache-Control": "no-cache",
+                "Connection": "keep-alive",
+                "Content-Type": "text/event-stream"
+            }
+        )
+        
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="PDF not found")
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
+
 @router.post("/chat")
 async def chat_with_ai(request: ChatRequest):
     """

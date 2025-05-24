@@ -37,6 +37,67 @@ export const aiService = {
     return response.data;
   },
 
+  streamAnalyzePage: async function* (
+    filename: string,
+    pageNum: number,
+    context?: string
+  ): AsyncGenerator<{ content?: string, done?: boolean, text_extracted?: boolean, error?: string }, void, unknown> {
+    try {
+      const response = await fetch('http://localhost:8000/ai/analyze/stream', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          filename,
+          page_num: pageNum,
+          context: context || ""
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const reader = response.body?.getReader();
+      if (!reader) {
+        throw new Error('Failed to get response reader');
+      }
+
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              try {
+                const data = JSON.parse(line.slice(6));
+                yield data;
+                if (data.done) {
+                  return;
+                }
+              } catch (e) {
+                console.error('Error parsing SSE data:', e);
+              }
+            }
+          }
+        }
+      } finally {
+        reader.releaseLock();
+      }
+    } catch (error) {
+      throw new Error(`Analysis failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+
   getPageContext: async (filename: string, pageNum: number, contextPages: number = 1) => {
     const response = await api.get(`/ai/${filename}/context/${pageNum}?context_pages=${contextPages}`);
     return response.data;
@@ -48,7 +109,7 @@ export const chatService = {
     message: string,
     filename: string,
     pageNum: number,
-    chatHistory?: Array<{role: string, content: string}>
+    chatHistory?: Array<{ role: string, content: string }>
   ): AsyncGenerator<string, void, unknown> {
     try {
       const response = await fetch('http://localhost:8000/ai/chat', {
