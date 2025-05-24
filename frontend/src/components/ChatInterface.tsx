@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { chatService } from '../services/api';
 
 interface Message {
   id: string;
@@ -16,6 +17,7 @@ export default function ChatInterface({ filename, currentPage }: ChatInterfacePr
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(false);
+  const [streaming, setStreaming] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -37,32 +39,52 @@ export default function ChatInterface({ filename, currentPage }: ChatInterfacePr
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const currentInput = inputText;
     setInputText('');
     setLoading(true);
+    setStreaming(true);
+
+    // Create placeholder AI message for streaming
+    const aiMessageId = (Date.now() + 1).toString();
+    const aiMessage: Message = {
+      id: aiMessageId,
+      text: '',
+      isUser: false,
+      timestamp: new Date(),
+    };
+    setMessages(prev => [...prev, aiMessage]);
 
     try {
-      // TODO: Implement AI chat API call
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
-      
-      const aiResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        text: `I understand you're asking about "${inputText}" in relation to page ${currentPage} of ${filename}. This is a placeholder response. The actual AI integration will provide contextual answers based on the PDF content.`,
-        isUser: false,
-        timestamp: new Date(),
-      };
+      // Convert messages to chat history format
+      const chatHistory = messages.map(msg => ({
+        role: msg.isUser ? 'user' : 'assistant',
+        content: msg.text
+      }));
 
-      setMessages(prev => [...prev, aiResponse]);
+      // Stream the AI response
+      const stream = chatService.streamChat(currentInput, filename, currentPage, chatHistory);
+      
+      let fullResponse = '';
+      for await (const chunk of stream) {
+        fullResponse += chunk;
+        setMessages(prev => prev.map(msg => 
+          msg.id === aiMessageId 
+            ? { ...msg, text: fullResponse }
+            : msg
+        ));
+      }
     } catch (error) {
       console.error('Chat failed:', error);
-      const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        text: 'Sorry, I encountered an error. Please try again.',
-        isUser: false,
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, errorMessage]);
+      const errorText = `Sorry, I encountered an error: ${error instanceof Error ? error.message : 'Unknown error'}. Please make sure the AI service is running.`;
+      
+      setMessages(prev => prev.map(msg => 
+        msg.id === aiMessageId 
+          ? { ...msg, text: errorText }
+          : msg
+      ));
     } finally {
       setLoading(false);
+      setStreaming(false);
     }
   };
 
@@ -106,10 +128,10 @@ export default function ChatInterface({ filename, currentPage }: ChatInterfacePr
             </div>
           ))
         )}
-        {loading && (
+        {streaming && (
           <div className="flex justify-start">
             <div className="bg-gray-100 text-gray-800 px-3 py-2 rounded-lg text-sm">
-              AI is thinking...
+              <span className="inline-block animate-pulse">AI is typing...</span>
             </div>
           </div>
         )}
@@ -133,7 +155,7 @@ export default function ChatInterface({ filename, currentPage }: ChatInterfacePr
             disabled={!inputText.trim() || !filename || loading}
             className="px-4 py-2 bg-blue-500 text-white rounded-md disabled:bg-gray-300 disabled:cursor-not-allowed"
           >
-            Send
+            {loading ? 'Sending...' : 'Send'}
           </button>
         </div>
       </div>

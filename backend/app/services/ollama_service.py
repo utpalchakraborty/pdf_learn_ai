@@ -15,7 +15,9 @@ class OllamaService:
         """
         Analyze a PDF page using AI
         """
-        system_prompt = """You are an intelligent study assistant. Your role is to help users understand PDF documents by providing clear, insightful analysis of the content.
+        system_prompt = """/no_think 
+        
+        You are an intelligent study assistant. Your role is to help users understand PDF documents by providing clear, insightful analysis of the content.
 
 When analyzing a page, you should:
 1. Summarize the key points and main ideas
@@ -86,7 +88,7 @@ Keep responses conversational but informative."""
                 model=self.model,
                 messages=messages,
                 temperature=0.7,
-                max_tokens=800,
+                # max_tokens=800,
                 stream=True
             )
             
@@ -105,7 +107,7 @@ Keep responses conversational but informative."""
             response = await self.client.chat.completions.create(
                 model=self.model,
                 messages=[{"role": "user", "content": "Hello, are you working?"}],
-                max_tokens=50
+                # max_tokens=50
             )
             
             return {
