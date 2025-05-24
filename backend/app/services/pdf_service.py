@@ -3,6 +3,7 @@ from typing import List, Dict, Any
 import os
 from datetime import datetime
 from PyPDF2 import PdfReader
+import pdfplumber
 
 class PDFService:
     def __init__(self, pdf_dir: str = "pdfs"):
@@ -100,3 +101,49 @@ class PDFService:
             }
             
             return pdf_info
+    
+    def get_pdf_path(self, filename: str) -> Path:
+        """
+        Get the full path to a PDF file
+        """
+        file_path = self.pdf_dir / filename
+        
+        if not file_path.exists():
+            raise FileNotFoundError(f"PDF {filename} not found")
+        
+        if not file_path.suffix.lower() == '.pdf':
+            raise ValueError(f"{filename} is not a PDF file")
+        
+        return file_path
+    
+    def extract_page_text(self, filename: str, page_num: int) -> str:
+        """
+        Extract text from a specific page of the PDF
+        """
+        file_path = self.get_pdf_path(filename)
+        
+        try:
+            with pdfplumber.open(file_path) as pdf:
+                if page_num < 1 or page_num > len(pdf.pages):
+                    raise ValueError(f"Page {page_num} is out of range. PDF has {len(pdf.pages)} pages.")
+                
+                # pdfplumber uses 0-based indexing
+                page = pdf.pages[page_num - 1]
+                text = page.extract_text()
+                
+                return text or ""
+                
+        except Exception as e:
+            # Fallback to PyPDF2 if pdfplumber fails
+            try:
+                with open(file_path, 'rb') as file:
+                    reader = PdfReader(file)
+                    if page_num < 1 or page_num > len(reader.pages):
+                        raise ValueError(f"Page {page_num} is out of range. PDF has {len(reader.pages)} pages.")
+                    
+                    page = reader.pages[page_num - 1]
+                    text = page.extract_text()
+                    
+                    return text or ""
+            except Exception as fallback_error:
+                raise Exception(f"Failed to extract text with both pdfplumber and PyPDF2: {str(e)}, {str(fallback_error)}")

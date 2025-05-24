@@ -1,8 +1,13 @@
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import PDFViewer from '../components/PDFViewer';
+import AIPanel from '../components/AIPanel';
+import ChatInterface from '../components/ChatInterface';
 
 export default function Reader() {
   const { filename } = useParams<{ filename: string }>();
   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
 
   return (
     <div className="h-screen flex flex-col bg-gray-50">
@@ -15,36 +20,36 @@ export default function Reader() {
             ← Back to Library
           </button>
           <h1 className="text-lg font-semibold text-gray-800">
-            {filename ? decodeURIComponent(filename) : 'PDF Reader'}
+            PDF AI Reader
           </h1>
         </div>
       </div>
       
       <div className="flex-1 flex">
-        <div className="w-1/2 border-r border-gray-200 bg-white flex items-center justify-center">
-          <div className="text-center text-gray-500">
-            <div className="text-4xl mb-4">📄</div>
-            <p>PDF Viewer Component</p>
-            <p className="text-sm">Coming next...</p>
-          </div>
+        {/* PDF Viewer - Left Pane */}
+        <div className="w-1/2 border-r border-gray-200">
+          <PDFViewer 
+            filename={filename}
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
+          />
         </div>
         
+        {/* Right Pane - AI Analysis + Chat */}
         <div className="w-1/2 flex flex-col">
-          <div className="flex-1 bg-white flex items-center justify-center border-b border-gray-200">
-            <div className="text-center text-gray-500">
-              <div className="text-4xl mb-4">🤖</div>
-              <p>AI Analysis Panel</p>
-              <p className="text-sm">Coming soon...</p>
-            </div>
+          {/* AI Analysis Panel - Top */}
+          <div className="flex-1 border-b border-gray-200">
+            <AIPanel 
+              filename={filename}
+              currentPage={currentPage}
+            />
           </div>
           
-          <div className="h-1/3 bg-gray-50 flex items-center justify-center">
-            <div className="text-center text-gray-500">
-              <div className="text-4xl mb-4">💬</div>
-              <p>Chat Interface</p>
-              <p className="text-sm">Coming soon...</p>
-            </div>
-          </div>
+          {/* Chat Interface - Bottom */}
+          <ChatInterface 
+            filename={filename}
+            currentPage={currentPage}
+          />
         </div>
       </div>
     </div>

@@ -1,0 +1,154 @@
+import { useState, useCallback } from 'react';
+import { Document, Page, pdfjs } from 'react-pdf';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
+
+// Set up the worker for react-pdf v9
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+
+interface PDFViewerProps {
+  filename?: string;
+  currentPage: number;
+  onPageChange: (page: number) => void;
+}
+
+export default function PDFViewer({ filename, currentPage, onPageChange }: PDFViewerProps) {
+  const [numPages, setNumPages] = useState<number>(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [scale, setScale] = useState<number>(1.2); // Default zoom level
+
+  const onDocumentLoadSuccess = useCallback(({ numPages }: { numPages: number }) => {
+    setNumPages(numPages);
+    setLoading(false);
+    setError(null);
+  }, []);
+
+  const onDocumentLoadError = useCallback((error: Error) => {
+    setError(`Failed to load PDF: ${error.message}`);
+    setLoading(false);
+  }, []);
+
+  const goToPrevPage = () => {
+    if (currentPage > 1) {
+      onPageChange(currentPage - 1);
+    }
+  };
+
+  const goToNextPage = () => {
+    if (currentPage < numPages) {
+      onPageChange(currentPage + 1);
+    }
+  };
+
+  const zoomIn = () => {
+    setScale(prev => Math.min(prev + 0.2, 3.0)); // Max zoom 3x
+  };
+
+  const zoomOut = () => {
+    setScale(prev => Math.max(prev - 0.2, 0.5)); // Min zoom 0.5x
+  };
+
+  const resetZoom = () => {
+    setScale(1.2);
+  };
+
+  if (!filename) {
+    return (
+      <div className="h-full flex items-center justify-center bg-gray-50">
+        <p className="text-gray-500">No PDF selected</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="h-full flex flex-col bg-gray-50">
+      {/* Header with navigation */}
+      <div className="bg-white border-b px-4 py-3 flex items-center justify-between">
+        <h1 className="text-lg font-semibold truncate">{filename}</h1>
+        <div className="flex items-center gap-4">
+          {/* Zoom controls */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={zoomOut}
+              disabled={scale <= 0.5}
+              className="px-3 py-1 bg-gray-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed"
+            >
+              Zoom Out
+            </button>
+            <span className="text-sm text-gray-600 min-w-16 text-center">
+              {Math.round(scale * 100)}%
+            </span>
+            <button
+              onClick={zoomIn}
+              disabled={scale >= 3.0}
+              className="px-3 py-1 bg-gray-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed"
+            >
+              Zoom In
+            </button>
+            <button
+              onClick={resetZoom}
+              className="px-3 py-1 bg-gray-600 text-white rounded"
+            >
+              Reset
+            </button>
+          </div>
+
+          {/* Page navigation */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={goToPrevPage}
+              disabled={currentPage <= 1}
+              className="px-3 py-1 bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed"
+            >
+              Previous
+            </button>
+            <span className="text-sm text-gray-600">
+              {loading ? '...' : `${currentPage} of ${numPages}`}
+            </span>
+            <button
+              onClick={goToNextPage}
+              disabled={currentPage >= numPages}
+              className="px-3 py-1 bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* PDF Content */}
+      <div className="flex-1 overflow-auto">
+        {error ? (
+          <div className="h-full flex items-center justify-center">
+            <div className="text-center">
+              <p className="text-red-600 mb-2">Error loading PDF</p>
+              <p className="text-sm text-gray-500">{error}</p>
+            </div>
+          </div>
+        ) : (
+          <div className="flex justify-center p-4">
+            <Document
+              file={`/api/pdf/${filename}/file`}
+              onLoadSuccess={onDocumentLoadSuccess}
+              onLoadError={onDocumentLoadError}
+              loading={
+                <div className="flex items-center justify-center h-96">
+                  <div className="text-gray-500">Loading PDF...</div>
+                </div>
+              }
+            >
+              <Page
+                pageNumber={currentPage}
+                renderTextLayer={true}
+                renderAnnotationLayer={true}
+                className="shadow-lg"
+                scale={scale}
+              />
+            </Document>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
