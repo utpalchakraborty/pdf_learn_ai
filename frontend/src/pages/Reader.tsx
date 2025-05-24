@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import PDFViewer from '../components/PDFViewer';
 import AIPanel from '../components/AIPanel';
 import ChatInterface from '../components/ChatInterface';
+import ResizablePanels from '../components/ResizablePanels';
 
 export default function Reader() {
   const { filename } = useParams<{ filename: string }>();
@@ -25,33 +26,27 @@ export default function Reader() {
         </div>
       </div>
 
-      <div className="flex-1 flex">
-        {/* PDF Viewer - Left Pane */}
-        <div className="w-1/2 border-r border-gray-700">
+      <ResizablePanels
+        leftPanel={
           <PDFViewer
             filename={filename}
             currentPage={currentPage}
             onPageChange={setCurrentPage}
           />
-        </div>
-
-        {/* Right Pane - AI Analysis + Chat */}
-        <div className="w-1/2 flex flex-col">
-          {/* AI Analysis Panel - Top */}
-          <div className="flex-1 border-b border-gray-700">
-            <AIPanel
-              filename={filename}
-              currentPage={currentPage}
-            />
-          </div>
-
-          {/* Chat Interface - Bottom */}
+        }
+        rightTopPanel={
+          <AIPanel
+            filename={filename}
+            currentPage={currentPage}
+          />
+        }
+        rightBottomPanel={
           <ChatInterface
             filename={filename}
             currentPage={currentPage}
           />
-        </div>
-      </div>
+        }
+      />
     </div>
   );
 }

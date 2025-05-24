@@ -152,7 +152,7 @@ export default function ChatInterface({ filename, currentPage }: ChatInterfacePr
   } as Components;
 
   return (
-    <div className="h-80 flex flex-col bg-gray-900 border-t border-gray-700">
+    <div className="h-full flex flex-col bg-gray-900 border-t border-gray-700">
       {/* Header */}
       <div className="border-b border-gray-700 px-4 py-2 bg-gray-800">
         <h3 className="text-sm font-medium text-gray-200">
