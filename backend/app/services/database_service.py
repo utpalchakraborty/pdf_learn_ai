@@ -29,6 +29,25 @@ class DatabaseService:
                     last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             """)
+            
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS chat_notes (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    pdf_filename TEXT NOT NULL,
+                    page_number INTEGER NOT NULL,
+                    title TEXT,
+                    chat_content TEXT NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+            
+            # Create index for faster lookups
+            conn.execute("""
+                CREATE INDEX IF NOT EXISTS idx_chat_notes_pdf_page 
+                ON chat_notes(pdf_filename, page_number)
+            """)
+            
             conn.commit()
     
     def save_reading_progress(self, pdf_filename: str, last_page: int, total_pages: int) -> bool:
@@ -93,6 +112,100 @@ class DatabaseService:
         except Exception as e:
             logger.error(f"Error getting all reading progress: {e}")
             return {}
+    
+    def save_chat_note(self, pdf_filename: str, page_number: int, title: str, chat_content: str) -> Optional[int]:
+        """Save a chat conversation as a note"""
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.execute("""
+                    INSERT INTO chat_notes (pdf_filename, page_number, title, chat_content, created_at, updated_at)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                """, (pdf_filename, page_number, title, chat_content, datetime.now(), datetime.now()))
+                conn.commit()
+                note_id = cursor.lastrowid
+                logger.info(f"Saved chat note for {pdf_filename}, page {page_number}")
+                return note_id
+        except Exception as e:
+            logger.error(f"Error saving chat note: {e}")
+            return None
+    
+    def get_chat_notes_for_pdf(self, pdf_filename: str, page_number: Optional[int] = None) -> list[Dict[str, Any]]:
+        """Get chat notes for a PDF, optionally filtered by page"""
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                conn.row_factory = sqlite3.Row
+                
+                if page_number is not None:
+                    cursor = conn.execute("""
+                        SELECT id, pdf_filename, page_number, title, chat_content, created_at, updated_at
+                        FROM chat_notes 
+                        WHERE pdf_filename = ? AND page_number = ?
+                        ORDER BY created_at DESC
+                    """, (pdf_filename, page_number))
+                else:
+                    cursor = conn.execute("""
+                        SELECT id, pdf_filename, page_number, title, chat_content, created_at, updated_at
+                        FROM chat_notes 
+                        WHERE pdf_filename = ?
+                        ORDER BY page_number, created_at DESC
+                    """, (pdf_filename,))
+                
+                notes = []
+                for row in cursor.fetchall():
+                    notes.append({
+                        "id": row["id"],
+                        "pdf_filename": row["pdf_filename"],
+                        "page_number": row["page_number"],
+                        "title": row["title"],
+                        "chat_content": row["chat_content"],
+                        "created_at": row["created_at"],
+                        "updated_at": row["updated_at"]
+                    })
+                return notes
+        except Exception as e:
+            logger.error(f"Error getting chat notes: {e}")
+            return []
+    
+    def get_chat_note_by_id(self, note_id: int) -> Optional[Dict[str, Any]]:
+        """Get a specific chat note by ID"""
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                conn.row_factory = sqlite3.Row
+                cursor = conn.execute("""
+                    SELECT id, pdf_filename, page_number, title, chat_content, created_at, updated_at
+                    FROM chat_notes 
+                    WHERE id = ?
+                """, (note_id,))
+                row = cursor.fetchone()
+                
+                if row:
+                    return {
+                        "id": row["id"],
+                        "pdf_filename": row["pdf_filename"],
+                        "page_number": row["page_number"],
+                        "title": row["title"],
+                        "chat_content": row["chat_content"],
+                        "created_at": row["created_at"],
+                        "updated_at": row["updated_at"]
+                    }
+                return None
+        except Exception as e:
+            logger.error(f"Error getting chat note: {e}")
+            return None
+    
+    def delete_chat_note(self, note_id: int) -> bool:
+        """Delete a chat note"""
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.execute("DELETE FROM chat_notes WHERE id = ?", (note_id,))
+                conn.commit()
+                deleted = cursor.rowcount > 0
+                if deleted:
+                    logger.info(f"Deleted chat note {note_id}")
+                return deleted
+        except Exception as e:
+            logger.error(f"Error deleting chat note: {e}")
+            return False
 
 # Global instance
 db_service = DatabaseService()

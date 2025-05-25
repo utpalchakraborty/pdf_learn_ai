@@ -8,7 +8,7 @@ import 'highlight.js/styles/github.css';
 import 'katex/dist/katex.min.css'; // KaTeX CSS for math rendering
 import '../styles/katex-dark.css'; // Custom dark theme for KaTeX
 import type { Components } from 'react-markdown';
-import { chatService } from '../services/api';
+import { chatService, notesService } from '../services/api';
 
 interface Message {
   id: string;
@@ -27,10 +27,40 @@ export default function ChatInterface({ filename, currentPage }: ChatInterfacePr
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(false);
   const [streaming, setStreaming] = useState(false);
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [noteTitle, setNoteTitle] = useState('');
+  const [saving, setSaving] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const clearChat = () => {
     setMessages([]);
+  };
+
+  const saveChatAsNote = async () => {
+    if (!filename || messages.length === 0) return;
+
+    setSaving(true);
+    try {
+      // Convert messages to a formatted string
+      const chatContent = messages.map(msg => 
+        `**${msg.isUser ? 'You' : 'AI'}**: ${msg.text}`
+      ).join('\n\n');
+
+      const title = noteTitle.trim() || `Chat on page ${currentPage} - ${new Date().toLocaleDateString()}`;
+
+      await notesService.saveChatNote(filename, currentPage, title, chatContent);
+      
+      setShowSaveDialog(false);
+      setNoteTitle('');
+      
+      // Show success message (you could add a toast notification here)
+      console.log('Chat saved as note successfully!');
+    } catch (error) {
+      console.error('Error saving chat note:', error);
+      // Show error message (you could add a toast notification here)
+    } finally {
+      setSaving(false);
+    }
   };
 
   const scrollToBottom = () => {
@@ -177,13 +207,23 @@ export default function ChatInterface({ filename, currentPage }: ChatInterfacePr
           Chat about {filename ? `${filename} (Page ${currentPage})` : 'PDF'}
         </h3>
         {messages.length > 0 && (
-          <button
-            onClick={clearChat}
-            className="px-3 py-1 text-xs bg-gray-600 text-gray-200 rounded hover:bg-gray-500 transition-colors"
-            title="Clear chat"
-          >
-            Clear Chat
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setShowSaveDialog(true)}
+              disabled={!filename}
+              className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-500 transition-colors disabled:bg-gray-600 disabled:cursor-not-allowed"
+              title="Save chat as note"
+            >
+              Save Note
+            </button>
+            <button
+              onClick={clearChat}
+              className="px-3 py-1 text-xs bg-gray-600 text-gray-200 rounded hover:bg-gray-500 transition-colors"
+              title="Clear chat"
+            >
+              Clear Chat
+            </button>
+          </div>
         )}
       </div>
 
@@ -253,6 +293,50 @@ export default function ChatInterface({ filename, currentPage }: ChatInterfacePr
           </button>
         </div>
       </div>
+
+      {/* Save Note Dialog */}
+      {showSaveDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 w-96 max-w-90vw">
+            <h3 className="text-lg font-medium text-gray-200 mb-4">Save Chat as Note</h3>
+            
+            <div className="mb-4">
+              <label className="block text-sm text-gray-300 mb-2">Note Title</label>
+              <input
+                type="text"
+                value={noteTitle}
+                onChange={(e) => setNoteTitle(e.target.value)}
+                placeholder={`Chat on page ${currentPage} - ${new Date().toLocaleDateString()}`}
+                className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+            
+            <div className="mb-4 text-sm text-gray-400">
+              This will save the entire chat conversation ({messages.length} messages) linked to page {currentPage} of {filename}.
+            </div>
+            
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => {
+                  setShowSaveDialog(false);
+                  setNoteTitle('');
+                }}
+                disabled={saving}
+                className="px-4 py-2 text-gray-300 border border-gray-600 rounded-md hover:bg-gray-700 transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={saveChatAsNote}
+                disabled={saving}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {saving ? 'Saving...' : 'Save Note'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

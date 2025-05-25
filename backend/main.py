@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import pdf, ai
+from app.routers import pdf, ai, notes
 
 app = FastAPI(title="PDF AI Reader API", version="1.0.0")
 
@@ -29,6 +29,7 @@ async def health_check():
 # Include routers
 app.include_router(pdf.router)
 app.include_router(ai.router)
+app.include_router(notes.router)
 
 if __name__ == "__main__":
     import uvicorn

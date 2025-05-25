@@ -40,6 +40,34 @@ export const pdfService = {
   }
 };
 
+export const notesService = {
+  saveChatNote: async (pdfFilename: string, pageNumber: number, title: string, chatContent: string): Promise<any> => {
+    const response = await api.post('/notes/chat', {
+      pdf_filename: pdfFilename,
+      page_number: pageNumber,
+      title: title,
+      chat_content: chatContent
+    });
+    return response.data;
+  },
+
+  getChatNotesForPdf: async (pdfFilename: string, pageNumber?: number): Promise<any[]> => {
+    const params = pageNumber ? `?page_number=${pageNumber}` : '';
+    const response = await api.get(`/notes/chat/${pdfFilename}${params}`);
+    return response.data;
+  },
+
+  getChatNoteById: async (noteId: number): Promise<any> => {
+    const response = await api.get(`/notes/chat/id/${noteId}`);
+    return response.data;
+  },
+
+  deleteChatNote: async (noteId: number): Promise<any> => {
+    const response = await api.delete(`/notes/chat/${noteId}`);
+    return response.data;
+  }
+};
+
 export const aiService = {
   checkHealth: async () => {
     const response = await api.get('/ai/health');
