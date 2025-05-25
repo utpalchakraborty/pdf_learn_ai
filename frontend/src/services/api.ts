@@ -19,6 +19,24 @@ export const pdfService = {
   getPageText: async (filename: string, pageNum: number): Promise<string> => {
     const response = await api.get(`/pdf/${filename}/text/${pageNum}`);
     return response.data;
+  },
+
+  saveReadingProgress: async (filename: string, lastPage: number, totalPages: number): Promise<any> => {
+    const response = await api.put(`/pdf/${filename}/progress`, {
+      last_page: lastPage,
+      total_pages: totalPages
+    });
+    return response.data;
+  },
+
+  getReadingProgress: async (filename: string): Promise<{ pdf_filename: string, last_page: number, total_pages: number | null, last_updated: string | null }> => {
+    const response = await api.get(`/pdf/${filename}/progress`);
+    return response.data;
+  },
+
+  getAllReadingProgress: async (): Promise<{ progress: Record<string, any> }> => {
+    const response = await api.get('/pdf/progress/all');
+    return response.data;
   }
 };
 

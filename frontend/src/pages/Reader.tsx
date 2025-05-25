@@ -1,14 +1,67 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import PDFViewer from '../components/PDFViewer';
 import AIPanel from '../components/AIPanel';
 import ChatInterface from '../components/ChatInterface';
 import ResizablePanels from '../components/ResizablePanels';
+import { pdfService } from '../services/api';
 
 export default function Reader() {
   const { filename } = useParams<{ filename: string }>();
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState<number | null>(null);
+  const [isProgressLoaded, setIsProgressLoaded] = useState(false);
+
+  // Load reading progress on component mount
+  useEffect(() => {
+    if (!filename) return;
+
+    const loadReadingProgress = async () => {
+      try {
+        const progress = await pdfService.getReadingProgress(filename);
+        if (progress.last_page && progress.last_page > 1) {
+          setCurrentPage(progress.last_page);
+        }
+        if (progress.total_pages) {
+          setTotalPages(progress.total_pages);
+        }
+      } catch (error) {
+        console.error('Error loading reading progress:', error);
+      } finally {
+        setIsProgressLoaded(true);
+      }
+    };
+
+    loadReadingProgress();
+  }, [filename]);
+
+  // Save reading progress when page changes
+  useEffect(() => {
+    if (!filename || !isProgressLoaded || !totalPages) return;
+
+    const saveProgress = async () => {
+      try {
+        await pdfService.saveReadingProgress(filename, currentPage, totalPages);
+      } catch (error) {
+        console.error('Error saving reading progress:', error);
+      }
+    };
+
+    // Debounce saving to avoid too many requests
+    const timeoutId = setTimeout(saveProgress, 1000);
+    return () => clearTimeout(timeoutId);
+  }, [filename, currentPage, totalPages, isProgressLoaded]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handleTotalPagesChange = (total: number) => {
+    if (!totalPages) {
+      setTotalPages(total);
+    }
+  };
 
   return (
     <div className="h-screen flex flex-col bg-gray-900">
@@ -31,7 +84,8 @@ export default function Reader() {
           <PDFViewer
             filename={filename}
             currentPage={currentPage}
-            onPageChange={setCurrentPage}
+            onPageChange={handlePageChange}
+            onTotalPagesChange={handleTotalPagesChange}
           />
         }
         rightTopPanel={

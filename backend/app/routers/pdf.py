@@ -4,13 +4,19 @@ from pathlib import Path
 from typing import List, Dict, Any
 import os
 from datetime import datetime
+from pydantic import BaseModel
 
 from ..services.pdf_service import PDFService
+from ..services.database_service import db_service
 
 router = APIRouter(prefix="/pdf", tags=["pdf"])
 
 # Initialize PDF service
 pdf_service = PDFService()
+
+class ReadingProgressRequest(BaseModel):
+    last_page: int
+    total_pages: int
 
 @router.get("/list")
 async def list_pdfs() -> List[Dict[str, Any]]:
@@ -74,3 +80,60 @@ async def get_page_text(filename: str, page_num: int) -> Dict[str, Any]:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error extracting text: {str(e)}")
+
+@router.put("/{filename}/progress")
+async def save_reading_progress(filename: str, progress: ReadingProgressRequest) -> Dict[str, Any]:
+    """
+    Save reading progress for a PDF
+    """
+    try:
+        success = db_service.save_reading_progress(
+            pdf_filename=filename,
+            last_page=progress.last_page,
+            total_pages=progress.total_pages
+        )
+        
+        if success:
+            return {
+                "success": True,
+                "message": f"Reading progress saved for {filename}",
+                "last_page": progress.last_page
+            }
+        else:
+            raise HTTPException(status_code=500, detail="Failed to save reading progress")
+            
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error saving reading progress: {str(e)}")
+
+@router.get("/{filename}/progress")
+async def get_reading_progress(filename: str) -> Dict[str, Any]:
+    """
+    Get reading progress for a PDF
+    """
+    try:
+        progress = db_service.get_reading_progress(filename)
+        
+        if progress:
+            return progress
+        else:
+            # Return default progress if none found
+            return {
+                "pdf_filename": filename,
+                "last_page": 1,
+                "total_pages": None,
+                "last_updated": None
+            }
+            
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error getting reading progress: {str(e)}")
+
+@router.get("/progress/all")
+async def get_all_reading_progress() -> Dict[str, Any]:
+    """
+    Get reading progress for all PDFs
+    """
+    try:
+        progress = db_service.get_all_reading_progress()
+        return {"progress": progress}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error getting reading progress: {str(e)}")

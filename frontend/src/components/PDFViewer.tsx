@@ -10,9 +10,10 @@ interface PDFViewerProps {
   filename?: string;
   currentPage: number;
   onPageChange: (page: number) => void;
+  onTotalPagesChange?: (totalPages: number) => void;
 }
 
-export default function PDFViewer({ filename, currentPage, onPageChange }: PDFViewerProps) {
+export default function PDFViewer({ filename, currentPage, onPageChange, onTotalPagesChange }: PDFViewerProps) {
   const [numPages, setNumPages] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -22,7 +23,8 @@ export default function PDFViewer({ filename, currentPage, onPageChange }: PDFVi
     setNumPages(numPages);
     setLoading(false);
     setError(null);
-  }, []);
+    onTotalPagesChange?.(numPages);
+  }, [onTotalPagesChange]);
 
   const onDocumentLoadError = useCallback((error: Error) => {
     setError(`Failed to load PDF: ${error.message}`);
