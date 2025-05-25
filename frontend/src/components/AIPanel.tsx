@@ -1,8 +1,12 @@
 import { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
 import rehypeHighlight from 'rehype-highlight';
+import rehypeKatex from 'rehype-katex';
 import 'highlight.js/styles/github.css'; // You can change this to other themes
+import 'katex/dist/katex.min.css'; // KaTeX CSS for math rendering
+import '../styles/katex-dark.css'; // Custom dark theme for KaTeX
 import type { Components } from 'react-markdown';
 import { aiService } from '../services/api';
 
@@ -120,12 +124,22 @@ export default function AIPanel({ filename, currentPage }: AIPanelProps) {
 
   const markdownComponents = {
     code: ({ className, children, ...props }) => {
-      const match = /language-(\w+)/.exec(className || '');
       return (
         <code className={`${className} bg-gray-700 text-gray-200 px-1 py-0.5 rounded text-xs font-mono`} {...props}>
           {children}
         </code>
       );
+    },
+    // Custom styling for math elements to work with dark theme
+    span: ({ className, children, ...props }) => {
+      if (className?.includes('katex')) {
+        return (
+          <span className={`${className} text-gray-200`} {...props}>
+            {children}
+          </span>
+        );
+      }
+      return <span className={className} {...props}>{children}</span>;
     },
     pre: ({ children }) => (
       <pre className="bg-gray-700 text-gray-200 p-3 rounded-md overflow-x-auto text-xs border border-gray-600">
@@ -233,8 +247,8 @@ export default function AIPanel({ filename, currentPage }: AIPanelProps) {
             {/* Main Analysis */}
             <div className="prose prose-sm prose-gray max-w-none">
               <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                rehypePlugins={[rehypeHighlight]}
+                remarkPlugins={[remarkGfm, remarkMath]}
+                rehypePlugins={[rehypeHighlight, rehypeKatex]}
                 components={markdownComponents}
               >
                 {analysis}
@@ -268,8 +282,8 @@ export default function AIPanel({ filename, currentPage }: AIPanelProps) {
                   <div className="mt-3 p-3 bg-gray-800 rounded-md border border-gray-700">
                     <div className="prose prose-sm prose-gray max-w-none">
                       <ReactMarkdown
-                        remarkPlugins={[remarkGfm]}
-                        rehypePlugins={[rehypeHighlight]}
+                        remarkPlugins={[remarkGfm, remarkMath]}
+                        rehypePlugins={[rehypeHighlight, rehypeKatex]}
                         components={{
                           ...markdownComponents,
                           p: ({ children }) => (

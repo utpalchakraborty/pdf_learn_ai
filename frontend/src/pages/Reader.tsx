@@ -53,6 +53,42 @@ export default function Reader() {
     return () => clearTimeout(timeoutId);
   }, [filename, currentPage, totalPages, isProgressLoaded]);
 
+  // Keyboard navigation for PDF pages
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Only handle arrow keys if no input/textarea is focused
+      const activeElement = document.activeElement;
+      const isInputFocused = activeElement?.tagName === 'INPUT' ||
+        activeElement?.tagName === 'TEXTAREA' ||
+        activeElement?.getAttribute('contenteditable') === 'true';
+
+      if (isInputFocused) return;
+
+      switch (event.key) {
+        case 'ArrowLeft':
+          event.preventDefault();
+          if (currentPage > 1) {
+            setCurrentPage(prev => prev - 1);
+          }
+          break;
+        case 'ArrowRight':
+          event.preventDefault();
+          if (totalPages && currentPage < totalPages) {
+            setCurrentPage(prev => prev + 1);
+          }
+          break;
+      }
+    };
+
+    // Add event listener
+    document.addEventListener('keydown', handleKeyDown);
+
+    // Cleanup
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [currentPage, totalPages]);
+
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
