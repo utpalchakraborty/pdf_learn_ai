@@ -74,14 +74,17 @@ export default function NotesPanel({ filename, currentPage }: NotesPanelProps) {
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
   const markdownComponents = {
     code: ({ className, children, ...props }) => {
       return (
-        <code className={`${className} bg-gray-700 text-gray-200 px-1 py-0.5 rounded text-xs font-mono`} {...props}>
+        <code
+          className={`${className} bg-gray-700 text-gray-200 px-1 py-0.5 rounded text-xs font-mono`}
+          {...props}
+        >
           {children}
         </code>
       );
@@ -94,7 +97,11 @@ export default function NotesPanel({ filename, currentPage }: NotesPanelProps) {
           </span>
         );
       }
-      return <span className={className} {...props}>{children}</span>;
+      return (
+        <span className={className} {...props}>
+          {children}
+        </span>
+      );
     },
     pre: ({ children }) => (
       <pre className="bg-gray-700 text-gray-200 p-2 rounded-md overflow-x-auto text-xs border border-gray-600">
@@ -112,19 +119,17 @@ export default function NotesPanel({ filename, currentPage }: NotesPanelProps) {
       </h2>
     ),
     p: ({ children }) => (
-      <p className="text-xs text-gray-300 leading-relaxed mb-2">
-        {children}
-      </p>
+      <p className="text-xs text-gray-300 leading-relaxed mb-2">{children}</p>
     ),
     strong: ({ children }) => (
-      <strong className="text-gray-200 font-semibold">
-        {children}
-      </strong>
+      <strong className="text-gray-200 font-semibold">{children}</strong>
     ),
   } as Components;
 
   // Separate notes by current page and other pages
-  const currentPageNotes = notes.filter(note => note.page_number === currentPage);
+  const currentPageNotes = notes.filter(
+    note => note.page_number === currentPage
+  );
   const otherPageNotes = notes.filter(note => note.page_number !== currentPage);
 
   if (!filename) {
@@ -162,7 +167,9 @@ export default function NotesPanel({ filename, currentPage }: NotesPanelProps) {
             <div className="text-center">
               <div className="text-gray-500 text-2xl mb-2">📝</div>
               <p className="text-gray-400 text-sm">No notes saved yet</p>
-              <p className="text-gray-500 text-xs mt-1">Save chat conversations to create notes</p>
+              <p className="text-gray-500 text-xs mt-1">
+                Save chat conversations to create notes
+              </p>
             </div>
           </div>
         ) : (
@@ -174,8 +181,11 @@ export default function NotesPanel({ filename, currentPage }: NotesPanelProps) {
                   Current Page ({currentPage})
                 </h4>
                 <div className="space-y-3">
-                  {currentPageNotes.map((note) => (
-                    <div key={note.id} className="bg-gray-800 border border-purple-500/30 rounded-lg">
+                  {currentPageNotes.map(note => (
+                    <div
+                      key={note.id}
+                      className="bg-gray-800 border border-purple-500/30 rounded-lg"
+                    >
                       <div className="p-3">
                         <div className="flex items-start justify-between mb-2">
                           <h5 className="text-sm font-medium text-gray-200 line-clamp-2">
@@ -186,8 +196,18 @@ export default function NotesPanel({ filename, currentPage }: NotesPanelProps) {
                             className="text-gray-400 hover:text-red-400 transition-colors ml-2 flex-shrink-0"
                             title="Delete note"
                           >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                              />
                             </svg>
                           </button>
                         </div>
@@ -195,10 +215,15 @@ export default function NotesPanel({ filename, currentPage }: NotesPanelProps) {
                           {formatDate(note.created_at)}
                         </p>
                         <button
-                          onClick={() => setExpandedNote(expandedNote === note.id ? null : note.id)}
+                          onClick={() =>
+                            setExpandedNote(
+                              expandedNote === note.id ? null : note.id
+                            )
+                          }
                           className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
                         >
-                          {expandedNote === note.id ? 'Hide' : 'Show'} conversation
+                          {expandedNote === note.id ? 'Hide' : 'Show'}{' '}
+                          conversation
                         </button>
                         {expandedNote === note.id && (
                           <div className="mt-3 pt-3 border-t border-gray-700">
@@ -233,51 +258,71 @@ export default function NotesPanel({ filename, currentPage }: NotesPanelProps) {
                 <div className="space-y-3">
                   {otherPageNotes
                     .sort((a, b) => a.page_number - b.page_number)
-                    .map((note) => (
-                    <div key={note.id} className="bg-gray-800 border border-gray-700 rounded-lg">
-                      <div className="p-3">
-                        <div className="flex items-start justify-between mb-2">
-                          <div>
-                            <h5 className="text-sm font-medium text-gray-200 line-clamp-2">
-                              {note.title}
-                            </h5>
-                            <p className="text-xs text-blue-400 mt-1">Page {note.page_number}</p>
-                          </div>
-                          <button
-                            onClick={() => deleteNote(note.id)}
-                            className="text-gray-400 hover:text-red-400 transition-colors ml-2 flex-shrink-0"
-                            title="Delete note"
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                          </button>
-                        </div>
-                        <p className="text-xs text-gray-400 mb-3">
-                          {formatDate(note.created_at)}
-                        </p>
-                        <button
-                          onClick={() => setExpandedNote(expandedNote === note.id ? null : note.id)}
-                          className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
-                        >
-                          {expandedNote === note.id ? 'Hide' : 'Show'} conversation
-                        </button>
-                        {expandedNote === note.id && (
-                          <div className="mt-3 pt-3 border-t border-gray-700">
-                            <div className="prose prose-sm prose-gray max-w-none">
-                              <ReactMarkdown
-                                remarkPlugins={[remarkGfm, remarkMath]}
-                                rehypePlugins={[rehypeHighlight, rehypeKatex]}
-                                components={markdownComponents}
-                              >
-                                {note.chat_content}
-                              </ReactMarkdown>
+                    .map(note => (
+                      <div
+                        key={note.id}
+                        className="bg-gray-800 border border-gray-700 rounded-lg"
+                      >
+                        <div className="p-3">
+                          <div className="flex items-start justify-between mb-2">
+                            <div>
+                              <h5 className="text-sm font-medium text-gray-200 line-clamp-2">
+                                {note.title}
+                              </h5>
+                              <p className="text-xs text-blue-400 mt-1">
+                                Page {note.page_number}
+                              </p>
                             </div>
+                            <button
+                              onClick={() => deleteNote(note.id)}
+                              className="text-gray-400 hover:text-red-400 transition-colors ml-2 flex-shrink-0"
+                              title="Delete note"
+                            >
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                />
+                              </svg>
+                            </button>
                           </div>
-                        )}
+                          <p className="text-xs text-gray-400 mb-3">
+                            {formatDate(note.created_at)}
+                          </p>
+                          <button
+                            onClick={() =>
+                              setExpandedNote(
+                                expandedNote === note.id ? null : note.id
+                              )
+                            }
+                            className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
+                          >
+                            {expandedNote === note.id ? 'Hide' : 'Show'}{' '}
+                            conversation
+                          </button>
+                          {expandedNote === note.id && (
+                            <div className="mt-3 pt-3 border-t border-gray-700">
+                              <div className="prose prose-sm prose-gray max-w-none">
+                                <ReactMarkdown
+                                  remarkPlugins={[remarkGfm, remarkMath]}
+                                  rehypePlugins={[rehypeHighlight, rehypeKatex]}
+                                  components={markdownComponents}
+                                >
+                                  {note.chat_content}
+                                </ReactMarkdown>
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </div>
             )}

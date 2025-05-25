@@ -22,7 +22,10 @@ interface ChatInterfaceProps {
   currentPage: number;
 }
 
-export default function ChatInterface({ filename, currentPage }: ChatInterfaceProps) {
+export default function ChatInterface({
+  filename,
+  currentPage,
+}: ChatInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(false);
@@ -42,17 +45,24 @@ export default function ChatInterface({ filename, currentPage }: ChatInterfacePr
     setSaving(true);
     try {
       // Convert messages to a formatted string
-      const chatContent = messages.map(msg => 
-        `**${msg.isUser ? 'You' : 'AI'}**: ${msg.text}`
-      ).join('\n\n');
+      const chatContent = messages
+        .map(msg => `**${msg.isUser ? 'You' : 'AI'}**: ${msg.text}`)
+        .join('\n\n');
 
-      const title = noteTitle.trim() || `Chat on page ${currentPage} - ${new Date().toLocaleDateString()}`;
+      const title =
+        noteTitle.trim() ||
+        `Chat on page ${currentPage} - ${new Date().toLocaleDateString()}`;
 
-      await notesService.saveChatNote(filename, currentPage, title, chatContent);
-      
+      await notesService.saveChatNote(
+        filename,
+        currentPage,
+        title,
+        chatContent
+      );
+
       setShowSaveDialog(false);
       setNoteTitle('');
-      
+
       // Show success message (you could add a toast notification here)
       console.log('Chat saved as note successfully!');
     } catch (error) {
@@ -101,30 +111,35 @@ export default function ChatInterface({ filename, currentPage }: ChatInterfacePr
       // Convert messages to chat history format
       const chatHistory = messages.map(msg => ({
         role: msg.isUser ? 'user' : 'assistant',
-        content: msg.text
+        content: msg.text,
       }));
 
       // Stream the AI response
-      const stream = chatService.streamChat(currentInput, filename, currentPage, chatHistory);
+      const stream = chatService.streamChat(
+        currentInput,
+        filename,
+        currentPage,
+        chatHistory
+      );
 
       let fullResponse = '';
       for await (const chunk of stream) {
         fullResponse += chunk;
-        setMessages(prev => prev.map(msg =>
-          msg.id === aiMessageId
-            ? { ...msg, text: fullResponse }
-            : msg
-        ));
+        setMessages(prev =>
+          prev.map(msg =>
+            msg.id === aiMessageId ? { ...msg, text: fullResponse } : msg
+          )
+        );
       }
     } catch (error) {
       console.error('Chat failed:', error);
       const errorText = `Sorry, I encountered an error: ${error instanceof Error ? error.message : 'Unknown error'}. Please make sure the AI service is running.`;
 
-      setMessages(prev => prev.map(msg =>
-        msg.id === aiMessageId
-          ? { ...msg, text: errorText }
-          : msg
-      ));
+      setMessages(prev =>
+        prev.map(msg =>
+          msg.id === aiMessageId ? { ...msg, text: errorText } : msg
+        )
+      );
     } finally {
       setLoading(false);
       setStreaming(false);
@@ -141,7 +156,10 @@ export default function ChatInterface({ filename, currentPage }: ChatInterfacePr
   const markdownComponents = {
     code: ({ className, children, ...props }) => {
       return (
-        <code className={`${className} bg-gray-600 text-gray-100 px-1 py-0.5 rounded text-xs font-mono`} {...props}>
+        <code
+          className={`${className} bg-gray-600 text-gray-100 px-1 py-0.5 rounded text-xs font-mono`}
+          {...props}
+        >
           {children}
         </code>
       );
@@ -155,7 +173,11 @@ export default function ChatInterface({ filename, currentPage }: ChatInterfacePr
           </span>
         );
       }
-      return <span className={className} {...props}>{children}</span>;
+      return (
+        <span className={className} {...props}>
+          {children}
+        </span>
+      );
     },
     pre: ({ children }) => (
       <pre className="bg-gray-600 text-gray-100 p-2 rounded-md overflow-x-auto text-xs border border-gray-500">
@@ -178,9 +200,7 @@ export default function ChatInterface({ filename, currentPage }: ChatInterfacePr
       </h3>
     ),
     p: ({ children }) => (
-      <p className="text-sm text-gray-200 leading-relaxed mb-1">
-        {children}
-      </p>
+      <p className="text-sm text-gray-200 leading-relaxed mb-1">{children}</p>
     ),
     ul: ({ children }) => (
       <ul className="text-sm text-gray-200 mb-1 pl-3 space-y-0.5">
@@ -231,19 +251,22 @@ export default function ChatInterface({ filename, currentPage }: ChatInterfacePr
       <div className="flex-1 overflow-auto p-4 space-y-3">
         {messages.length === 0 ? (
           <div className="text-gray-400 text-sm text-center">
-            {filename ? 'Ask questions about the PDF content...' : 'Open a PDF to start chatting'}
+            {filename
+              ? 'Ask questions about the PDF content...'
+              : 'Open a PDF to start chatting'}
           </div>
         ) : (
-          messages.map((message) => (
+          messages.map(message => (
             <div
               key={message.id}
               className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
             >
               <div
-                className={`max-w-xs lg:max-w-md px-3 py-2 rounded-lg text-sm ${message.isUser
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-700 text-gray-200'
-                  }`}
+                className={`max-w-xs lg:max-w-md px-3 py-2 rounded-lg text-sm ${
+                  message.isUser
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-700 text-gray-200'
+                }`}
               >
                 {message.isUser ? (
                   message.text
@@ -265,7 +288,9 @@ export default function ChatInterface({ filename, currentPage }: ChatInterfacePr
         {streaming && (
           <div className="flex justify-start">
             <div className="bg-gray-700 text-gray-200 px-3 py-2 rounded-lg text-sm">
-              <span className="inline-block animate-pulse">AI is typing...</span>
+              <span className="inline-block animate-pulse">
+                AI is typing...
+              </span>
             </div>
           </div>
         )}
@@ -278,9 +303,11 @@ export default function ChatInterface({ filename, currentPage }: ChatInterfacePr
           <input
             type="text"
             value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
+            onChange={e => setInputText(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={filename ? "Ask about this PDF..." : "Open a PDF to chat"}
+            placeholder={
+              filename ? 'Ask about this PDF...' : 'Open a PDF to chat'
+            }
             disabled={!filename || loading}
             className="flex-1 px-3 py-2 border border-gray-600 bg-gray-800 text-gray-200 placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-700 disabled:text-gray-500"
           />
@@ -298,23 +325,28 @@ export default function ChatInterface({ filename, currentPage }: ChatInterfacePr
       {showSaveDialog && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 w-96 max-w-90vw">
-            <h3 className="text-lg font-medium text-gray-200 mb-4">Save Chat as Note</h3>
-            
+            <h3 className="text-lg font-medium text-gray-200 mb-4">
+              Save Chat as Note
+            </h3>
+
             <div className="mb-4">
-              <label className="block text-sm text-gray-300 mb-2">Note Title</label>
+              <label className="block text-sm text-gray-300 mb-2">
+                Note Title
+              </label>
               <input
                 type="text"
                 value={noteTitle}
-                onChange={(e) => setNoteTitle(e.target.value)}
+                onChange={e => setNoteTitle(e.target.value)}
                 placeholder={`Chat on page ${currentPage} - ${new Date().toLocaleDateString()}`}
                 className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
-            
+
             <div className="mb-4 text-sm text-gray-400">
-              This will save the entire chat conversation ({messages.length} messages) linked to page {currentPage} of {filename}.
+              This will save the entire chat conversation ({messages.length}{' '}
+              messages) linked to page {currentPage} of {filename}.
             </div>
-            
+
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => {

@@ -22,7 +22,9 @@ export default function AIPanel({ filename, currentPage }: AIPanelProps) {
   const [loading, setLoading] = useState(false);
   const [streaming, setStreaming] = useState(false);
   const [autoAnalyze, setAutoAnalyze] = useState(false);
-  const [aiStatus, setAiStatus] = useState<'unknown' | 'connected' | 'error'>('unknown');
+  const [aiStatus, setAiStatus] = useState<'unknown' | 'connected' | 'error'>(
+    'unknown'
+  );
 
   // Check AI connection on mount
   useEffect(() => {
@@ -76,7 +78,10 @@ export default function AIPanel({ filename, currentPage }: AIPanelProps) {
       let fullAnalysis = '';
       let textExtracted = true;
 
-      for await (const chunk of aiService.streamAnalyzePage(filename, currentPage)) {
+      for await (const chunk of aiService.streamAnalyzePage(
+        filename,
+        currentPage
+      )) {
         if (chunk.error) {
           throw new Error(chunk.error);
         }
@@ -99,11 +104,17 @@ export default function AIPanel({ filename, currentPage }: AIPanelProps) {
       }
 
       if (!textExtracted) {
-        setAnalysis(prev => prev + '\n\n💡 Tip: This page might contain images, diagrams, or special formatting that requires visual analysis.');
+        setAnalysis(
+          prev =>
+            prev +
+            '\n\n💡 Tip: This page might contain images, diagrams, or special formatting that requires visual analysis.'
+        );
       }
     } catch (error) {
       console.error('Analysis failed:', error);
-      setAnalysis('Failed to analyze page. Please check if the AI service is running and try again.');
+      setAnalysis(
+        'Failed to analyze page. Please check if the AI service is running and try again.'
+      );
       setThinkingContent('');
     } finally {
       setLoading(false);
@@ -125,7 +136,10 @@ export default function AIPanel({ filename, currentPage }: AIPanelProps) {
   const markdownComponents = {
     code: ({ className, children, ...props }) => {
       return (
-        <code className={`${className} bg-gray-700 text-gray-200 px-1 py-0.5 rounded text-xs font-mono`} {...props}>
+        <code
+          className={`${className} bg-gray-700 text-gray-200 px-1 py-0.5 rounded text-xs font-mono`}
+          {...props}
+        >
           {children}
         </code>
       );
@@ -139,7 +153,11 @@ export default function AIPanel({ filename, currentPage }: AIPanelProps) {
           </span>
         );
       }
-      return <span className={className} {...props}>{children}</span>;
+      return (
+        <span className={className} {...props}>
+          {children}
+        </span>
+      );
     },
     pre: ({ children }) => (
       <pre className="bg-gray-700 text-gray-200 p-3 rounded-md overflow-x-auto text-xs border border-gray-600">
@@ -162,19 +180,13 @@ export default function AIPanel({ filename, currentPage }: AIPanelProps) {
       </h3>
     ),
     p: ({ children }) => (
-      <p className="text-sm text-gray-300 leading-relaxed mb-2">
-        {children}
-      </p>
+      <p className="text-sm text-gray-300 leading-relaxed mb-2">{children}</p>
     ),
     ul: ({ children }) => (
-      <ul className="text-sm text-gray-300 mb-2 pl-4 space-y-1">
-        {children}
-      </ul>
+      <ul className="text-sm text-gray-300 mb-2 pl-4 space-y-1">{children}</ul>
     ),
     ol: ({ children }) => (
-      <ol className="text-sm text-gray-300 mb-2 pl-4 space-y-1">
-        {children}
-      </ol>
+      <ol className="text-sm text-gray-300 mb-2 pl-4 space-y-1">{children}</ol>
     ),
     blockquote: ({ children }) => (
       <blockquote className="border-l-4 border-blue-500 pl-3 py-1 bg-blue-900/30 text-sm text-gray-300 italic">
@@ -196,7 +208,7 @@ export default function AIPanel({ filename, currentPage }: AIPanelProps) {
             <input
               type="checkbox"
               checked={autoAnalyze}
-              onChange={(e) => setAutoAnalyze(e.target.checked)}
+              onChange={e => setAutoAnalyze(e.target.checked)}
               className="mr-2 bg-gray-700 border-gray-600 text-blue-500 focus:ring-blue-500"
             />
             Auto-analyze pages
@@ -221,7 +233,8 @@ export default function AIPanel({ filename, currentPage }: AIPanelProps) {
           <div className="text-center mt-8">
             <div className="text-red-400 mb-2">AI service is not available</div>
             <div className="text-sm text-gray-400 mb-4">
-              Make sure Ollama is running with qwen3-30b model at localhost:11434
+              Make sure Ollama is running with qwen3-30b model at
+              localhost:11434
             </div>
             <button
               onClick={checkAIConnection}
@@ -236,9 +249,18 @@ export default function AIPanel({ filename, currentPage }: AIPanelProps) {
             {streaming && (
               <div className="flex items-center space-x-2 text-sm text-blue-400 bg-blue-900/30 p-2 rounded">
                 <div className="flex space-x-1">
-                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                  <div
+                    className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"
+                    style={{ animationDelay: '0ms' }}
+                  ></div>
+                  <div
+                    className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"
+                    style={{ animationDelay: '150ms' }}
+                  ></div>
+                  <div
+                    className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"
+                    style={{ animationDelay: '300ms' }}
+                  ></div>
                 </div>
                 <span>AI is analyzing...</span>
               </div>
@@ -274,7 +296,12 @@ export default function AIPanel({ filename, currentPage }: AIPanelProps) {
                     stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </button>
 
@@ -315,8 +342,7 @@ export default function AIPanel({ filename, currentPage }: AIPanelProps) {
           <div className="text-gray-400 text-center mt-8">
             {autoAnalyze
               ? 'Auto-analysis enabled. Change pages to see insights.'
-              : 'Click "Analyze Page" to get AI insights about the current page'
-            }
+              : 'Click "Analyze Page" to get AI insights about the current page'}
           </div>
         )}
       </div>

@@ -48,7 +48,9 @@ export default function Library() {
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-t-4 border-purple-400 mx-auto"></div>
-          <p className="mt-6 text-slate-300 text-lg font-medium">Loading your library...</p>
+          <p className="mt-6 text-slate-300 text-lg font-medium">
+            Loading your library...
+          </p>
         </div>
       </div>
     );
@@ -59,7 +61,9 @@ export default function Library() {
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
         <div className="text-center bg-slate-800/50 backdrop-blur-sm rounded-2xl p-8 border border-slate-700/50">
           <div className="text-red-400 text-4xl mb-4">⚠️</div>
-          <h2 className="text-2xl font-bold text-slate-200 mb-3">Error Loading PDFs</h2>
+          <h2 className="text-2xl font-bold text-slate-200 mb-3">
+            Error Loading PDFs
+          </h2>
           <p className="text-slate-400 mb-6 max-w-md">{error}</p>
           <button
             onClick={loadPDFs}
@@ -88,14 +92,16 @@ export default function Library() {
         {pdfs.length === 0 ? (
           <div className="text-center py-16">
             <div className="text-slate-600 text-8xl mb-6">📚</div>
-            <h2 className="text-2xl font-bold text-slate-300 mb-3">No PDFs Found</h2>
+            <h2 className="text-2xl font-bold text-slate-300 mb-3">
+              No PDFs Found
+            </h2>
             <p className="text-slate-400 text-lg max-w-md mx-auto">
               Place some PDF files in the backend/pdfs directory to get started
             </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {pdfs.map((pdf) => (
+            {pdfs.map(pdf => (
               <div
                 key={pdf.filename}
                 onClick={() => handlePDFClick(pdf.filename)}
@@ -103,17 +109,29 @@ export default function Library() {
               >
                 <div className="p-6">
                   <div className="flex items-start justify-between mb-4">
-                    <div className="text-purple-400 text-4xl group-hover:scale-110 transition-transform duration-200">📄</div>
-                    <div className="text-sm text-slate-400 bg-slate-700/50 px-3 py-1 rounded-full">
-                      {pdf.num_pages} pages
+                    <div className="text-purple-400 text-4xl group-hover:scale-110 transition-transform duration-200">
+                      📄
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {pdf.notes_info && (
+                        <div className="text-xs text-green-400 bg-green-500/10 border border-green-500/20 px-2 py-1 rounded-full flex items-center gap-1">
+                          📝 {pdf.notes_info.notes_count}
+                        </div>
+                      )}
+                      <div className="text-sm text-slate-400 bg-slate-700/50 px-3 py-1 rounded-full">
+                        {pdf.num_pages} pages
+                      </div>
                     </div>
                   </div>
 
-                  <h3 className="font-bold text-slate-200 mb-3 line-clamp-2 overflow-hidden text-lg group-hover:text-purple-300 transition-colors duration-200" style={{
-                    display: '-webkit-box',
-                    WebkitLineClamp: 2,
-                    WebkitBoxOrient: 'vertical'
-                  }}>
+                  <h3
+                    className="font-bold text-slate-200 mb-3 line-clamp-2 overflow-hidden text-lg group-hover:text-purple-300 transition-colors duration-200"
+                    style={{
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                    }}
+                  >
                     {pdf.title}
                   </h3>
 
@@ -124,11 +142,15 @@ export default function Library() {
                   <div className="text-xs text-slate-500 space-y-2">
                     <div className="flex items-center justify-between">
                       <span>Size:</span>
-                      <span className="text-slate-400">{formatFileSize(pdf.file_size)}</span>
+                      <span className="text-slate-400">
+                        {formatFileSize(pdf.file_size)}
+                      </span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span>Modified:</span>
-                      <span className="text-slate-400">{formatDate(pdf.modified_date)}</span>
+                      <span className="text-slate-400">
+                        {formatDate(pdf.modified_date)}
+                      </span>
                     </div>
                   </div>
 
@@ -141,13 +163,39 @@ export default function Library() {
                         </span>
                       </div>
                       <div className="w-full bg-slate-700/50 rounded-full h-2 overflow-hidden">
-                        <div 
+                        <div
                           className="bg-gradient-to-r from-purple-500 to-blue-500 h-full rounded-full transition-all duration-300"
-                          style={{ width: `${pdf.reading_progress.progress_percentage}%` }}
+                          style={{
+                            width: `${pdf.reading_progress.progress_percentage}%`,
+                          }}
                         ></div>
                       </div>
                       <div className="text-xs text-slate-500 mt-1">
-                        Page {pdf.reading_progress.last_page} of {pdf.reading_progress.total_pages}
+                        Page {pdf.reading_progress.last_page} of{' '}
+                        {pdf.reading_progress.total_pages}
+                      </div>
+                    </div>
+                  )}
+
+                  {pdf.notes_info && (
+                    <div
+                      className={`${pdf.reading_progress ? 'mt-3' : 'mt-4'} pt-3 border-t border-slate-600/50`}
+                    >
+                      <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
+                        <div className="flex items-center gap-1">
+                          <span>📝</span>
+                          <span>Notes</span>
+                        </div>
+                        <span className="text-green-400 font-medium">
+                          {pdf.notes_info.notes_count}{' '}
+                          {pdf.notes_info.notes_count === 1 ? 'note' : 'notes'}
+                        </span>
+                      </div>
+                      <div className="text-xs text-slate-500">
+                        Latest: {pdf.notes_info.latest_note_title}
+                      </div>
+                      <div className="text-xs text-slate-600 mt-1">
+                        {formatDate(pdf.notes_info.latest_note_date)}
                       </div>
                     </div>
                   )}

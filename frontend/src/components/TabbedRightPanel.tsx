@@ -10,7 +10,10 @@ interface TabbedRightPanelProps {
 
 type TabType = 'ai' | 'chat' | 'notes';
 
-export default function TabbedRightPanel({ filename, currentPage }: TabbedRightPanelProps) {
+export default function TabbedRightPanel({
+  filename,
+  currentPage,
+}: TabbedRightPanelProps) {
   const [activeTab, setActiveTab] = useState<TabType>('ai');
 
   const tabs = [
@@ -23,15 +26,16 @@ export default function TabbedRightPanel({ filename, currentPage }: TabbedRightP
     <div className="h-full flex flex-col bg-gray-900">
       {/* Tab Headers */}
       <div className="flex border-b border-gray-700 bg-gray-800">
-        {tabs.map((tab) => (
+        {tabs.map(tab => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={`
               flex-1 px-4 py-3 text-sm font-medium transition-colors
-              ${activeTab === tab.id
-                ? 'text-white bg-gray-900 border-b-2 border-blue-500'
-                : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700'
+              ${
+                activeTab === tab.id
+                  ? 'text-white bg-gray-900 border-b-2 border-blue-500'
+                  : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700'
               }
             `}
           >

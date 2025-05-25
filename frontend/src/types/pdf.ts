@@ -5,6 +5,12 @@ export interface ReadingProgress {
   last_updated: string;
 }
 
+export interface NotesInfo {
+  notes_count: number;
+  latest_note_date: string;
+  latest_note_title: string;
+}
+
 export interface PDF {
   filename: string;
   title: string;
@@ -14,6 +20,7 @@ export interface PDF {
   modified_date: string;
   created_date: string;
   reading_progress?: ReadingProgress | null;
+  notes_info?: NotesInfo | null;
   error?: string;
 }
 

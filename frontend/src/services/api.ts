@@ -2,7 +2,7 @@ import axios from 'axios';
 import type { PDF, PDFInfo } from '../types/pdf';
 
 const api = axios.create({
-  baseURL: 'http://localhost:8000'
+  baseURL: 'http://localhost:8000',
 });
 
 export const pdfService = {
@@ -21,37 +21,58 @@ export const pdfService = {
     return response.data;
   },
 
-  saveReadingProgress: async (filename: string, lastPage: number, totalPages: number): Promise<any> => {
+  saveReadingProgress: async (
+    filename: string,
+    lastPage: number,
+    totalPages: number
+  ): Promise<any> => {
     const response = await api.put(`/pdf/${filename}/progress`, {
       last_page: lastPage,
-      total_pages: totalPages
+      total_pages: totalPages,
     });
     return response.data;
   },
 
-  getReadingProgress: async (filename: string): Promise<{ pdf_filename: string, last_page: number, total_pages: number | null, last_updated: string | null }> => {
+  getReadingProgress: async (
+    filename: string
+  ): Promise<{
+    pdf_filename: string;
+    last_page: number;
+    total_pages: number | null;
+    last_updated: string | null;
+  }> => {
     const response = await api.get(`/pdf/${filename}/progress`);
     return response.data;
   },
 
-  getAllReadingProgress: async (): Promise<{ progress: Record<string, any> }> => {
+  getAllReadingProgress: async (): Promise<{
+    progress: Record<string, any>;
+  }> => {
     const response = await api.get('/pdf/progress/all');
     return response.data;
-  }
+  },
 };
 
 export const notesService = {
-  saveChatNote: async (pdfFilename: string, pageNumber: number, title: string, chatContent: string): Promise<any> => {
+  saveChatNote: async (
+    pdfFilename: string,
+    pageNumber: number,
+    title: string,
+    chatContent: string
+  ): Promise<any> => {
     const response = await api.post('/notes/chat', {
       pdf_filename: pdfFilename,
       page_number: pageNumber,
       title: title,
-      chat_content: chatContent
+      chat_content: chatContent,
     });
     return response.data;
   },
 
-  getChatNotesForPdf: async (pdfFilename: string, pageNumber?: number): Promise<any[]> => {
+  getChatNotesForPdf: async (
+    pdfFilename: string,
+    pageNumber?: number
+  ): Promise<any[]> => {
     const params = pageNumber ? `?page_number=${pageNumber}` : '';
     const response = await api.get(`/notes/chat/${pdfFilename}${params}`);
     return response.data;
@@ -65,7 +86,7 @@ export const notesService = {
   deleteChatNote: async (noteId: number): Promise<any> => {
     const response = await api.delete(`/notes/chat/${noteId}`);
     return response.data;
-  }
+  },
 };
 
 export const aiService = {
@@ -78,7 +99,7 @@ export const aiService = {
     const response = await api.post('/ai/analyze', {
       filename,
       page_num: pageNum,
-      context: context || ""
+      context: context || '',
     });
     return response.data;
   },
@@ -87,7 +108,16 @@ export const aiService = {
     filename: string,
     pageNum: number,
     context?: string
-  ): AsyncGenerator<{ content?: string, done?: boolean, text_extracted?: boolean, error?: string }, void, unknown> {
+  ): AsyncGenerator<
+    {
+      content?: string;
+      done?: boolean;
+      text_extracted?: boolean;
+      error?: string;
+    },
+    void,
+    unknown
+  > {
     try {
       const response = await fetch('http://localhost:8000/ai/analyze/stream', {
         method: 'POST',
@@ -97,8 +127,8 @@ export const aiService = {
         body: JSON.stringify({
           filename,
           page_num: pageNum,
-          context: context || ""
-        })
+          context: context || '',
+        }),
       });
 
       if (!response.ok) {
@@ -140,14 +170,22 @@ export const aiService = {
         reader.releaseLock();
       }
     } catch (error) {
-      throw new Error(`Analysis failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Analysis failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   },
 
-  getPageContext: async (filename: string, pageNum: number, contextPages: number = 1) => {
-    const response = await api.get(`/ai/${filename}/context/${pageNum}?context_pages=${contextPages}`);
+  getPageContext: async (
+    filename: string,
+    pageNum: number,
+    contextPages: number = 1
+  ) => {
+    const response = await api.get(
+      `/ai/${filename}/context/${pageNum}?context_pages=${contextPages}`
+    );
     return response.data;
-  }
+  },
 };
 
 export const chatService = {
@@ -155,7 +193,7 @@ export const chatService = {
     message: string,
     filename: string,
     pageNum: number,
-    chatHistory?: Array<{ role: string, content: string }>
+    chatHistory?: Array<{ role: string; content: string }>
   ): AsyncGenerator<string, void, unknown> {
     try {
       const response = await fetch('http://localhost:8000/ai/chat', {
@@ -167,8 +205,8 @@ export const chatService = {
           message,
           filename,
           page_num: pageNum,
-          chat_history: chatHistory
-        })
+          chat_history: chatHistory,
+        }),
       });
 
       if (!response.ok) {
@@ -215,9 +253,11 @@ export const chatService = {
         reader.releaseLock();
       }
     } catch (error) {
-      throw new Error(`Chat failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Chat failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
-  }
+  },
 };
 
 export default api;

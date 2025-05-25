@@ -29,7 +29,12 @@ const getSavedZoom = (): number => {
   return 1.0; // Default 100% zoom
 };
 
-export default function PDFViewer({ filename, currentPage, onPageChange, onTotalPagesChange }: PDFViewerProps) {
+export default function PDFViewer({
+  filename,
+  currentPage,
+  onPageChange,
+  onTotalPagesChange,
+}: PDFViewerProps) {
   const [numPages, setNumPages] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -44,12 +49,15 @@ export default function PDFViewer({ filename, currentPage, onPageChange, onTotal
     }
   }, [scale]);
 
-  const onDocumentLoadSuccess = useCallback(({ numPages }: { numPages: number }) => {
-    setNumPages(numPages);
-    setLoading(false);
-    setError(null);
-    onTotalPagesChange?.(numPages);
-  }, [onTotalPagesChange]);
+  const onDocumentLoadSuccess = useCallback(
+    ({ numPages }: { numPages: number }) => {
+      setNumPages(numPages);
+      setLoading(false);
+      setError(null);
+      onTotalPagesChange?.(numPages);
+    },
+    [onTotalPagesChange]
+  );
 
   const onDocumentLoadError = useCallback((error: Error) => {
     setError(`Failed to load PDF: ${error.message}`);
@@ -92,7 +100,9 @@ export default function PDFViewer({ filename, currentPage, onPageChange, onTotal
     <div className="h-full flex flex-col bg-gray-900">
       {/* Header with navigation */}
       <div className="bg-gray-800 border-b border-gray-700 px-4 py-3 flex items-center justify-between">
-        <h1 className="text-lg font-semibold text-gray-100 truncate">{filename}</h1>
+        <h1 className="text-lg font-semibold text-gray-100 truncate">
+          {filename}
+        </h1>
         <div className="flex items-center gap-4">
           {/* Zoom controls */}
           <div className="flex items-center gap-2">

@@ -57,7 +57,8 @@ export default function Reader() {
     const handleKeyDown = (event: KeyboardEvent) => {
       // Only handle arrow keys if no input/textarea is focused
       const activeElement = document.activeElement;
-      const isInputFocused = activeElement?.tagName === 'INPUT' ||
+      const isInputFocused =
+        activeElement?.tagName === 'INPUT' ||
         activeElement?.tagName === 'TEXTAREA' ||
         activeElement?.getAttribute('contenteditable') === 'true';
 
@@ -108,9 +109,7 @@ export default function Reader() {
           >
             ← Back to Library
           </button>
-          <h1 className="text-lg font-semibold text-gray-100">
-            PDF AI Reader
-          </h1>
+          <h1 className="text-lg font-semibold text-gray-100">PDF AI Reader</h1>
         </div>
       </div>
 
@@ -124,10 +123,7 @@ export default function Reader() {
           />
         }
         rightPanel={
-          <TabbedRightPanel
-            filename={filename}
-            currentPage={currentPage}
-          />
+          <TabbedRightPanel filename={filename} currentPage={currentPage} />
         }
       />
     </div>
