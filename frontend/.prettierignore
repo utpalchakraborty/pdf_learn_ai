@@ -27,4 +27,4 @@ coverage/
 *.min.css
 
 # Public assets that shouldn't be formatted
-public/ 
+public/

@@ -1,13 +1,11 @@
+from typing import Any, Dict, List
+
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
-from pathlib import Path
-from typing import List, Dict, Any
-import os
-from datetime import datetime
 from pydantic import BaseModel
 
-from ..services.pdf_service import PDFService
 from ..services.database_service import db_service
+from ..services.pdf_service import PDFService
 
 router = APIRouter(prefix="/pdf", tags=["pdf"])
 

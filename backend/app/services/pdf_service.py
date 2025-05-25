@@ -1,9 +1,9 @@
-from pathlib import Path
-from typing import List, Dict, Any
-import os
 from datetime import datetime
-from PyPDF2 import PdfReader
+from pathlib import Path
+from typing import Any, Dict, List
+
 import pdfplumber
+from PyPDF2 import PdfReader
 
 
 class PDFService:

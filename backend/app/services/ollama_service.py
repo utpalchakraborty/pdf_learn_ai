@@ -1,7 +1,6 @@
-import asyncio
-from typing import AsyncGenerator, Dict, Any
+from typing import Any, AsyncGenerator, Dict
+
 from openai import AsyncOpenAI
-import json
 
 
 class OllamaService:
@@ -20,8 +19,8 @@ class OllamaService:
         """
         Analyze a PDF page using AI
         """
-        system_prompt = """/no_think 
-        
+        system_prompt = """/no_think
+
         You are an intelligent study assistant. Your role is to help users understand PDF documents by providing clear, insightful analysis of the content.
 
 When analyzing a page, you should:
@@ -69,8 +68,8 @@ Provide a helpful analysis that will aid in understanding this content."""
         """
         Stream chat responses about the PDF content
         """
-        system_prompt = f"""/no_think 
-        You are an intelligent study assistant helping a user understand a PDF document. 
+        system_prompt = f"""/no_think
+        You are an intelligent study assistant helping a user understand a PDF document.
 
 Current context:
 - Document: {filename}
@@ -137,8 +136,8 @@ Keep responses conversational but informative."""
         """
         Analyze a PDF page using AI with streaming response
         """
-        system_prompt = """/no_think 
-        
+        system_prompt = """/no_think
+
         You are an intelligent study assistant. Your role is to help users understand PDF documents by providing clear, insightful analysis of the content.
 
 When analyzing a page, you should:

@@ -144,9 +144,7 @@ export default function NotesPanel({ filename, currentPage }: NotesPanelProps) {
     strong: ({ children }) => (
       <strong className="text-gray-200 font-semibold">{children}</strong>
     ),
-    em: ({ children }) => (
-      <em className="text-gray-300 italic">{children}</em>
-    ),
+    em: ({ children }) => <em className="text-gray-300 italic">{children}</em>,
     ul: ({ children }) => (
       <ul className="text-xs text-gray-300 list-disc list-inside mb-2 space-y-1">
         {children}
@@ -157,9 +155,7 @@ export default function NotesPanel({ filename, currentPage }: NotesPanelProps) {
         {children}
       </ol>
     ),
-    li: ({ children }) => (
-      <li className="text-gray-300">{children}</li>
-    ),
+    li: ({ children }) => <li className="text-gray-300">{children}</li>,
     blockquote: ({ children }) => (
       <blockquote className="border-l-2 border-gray-600 pl-3 text-xs text-gray-400 italic mb-2">
         {children}
@@ -182,12 +178,8 @@ export default function NotesPanel({ filename, currentPage }: NotesPanelProps) {
         </table>
       </div>
     ),
-    thead: ({ children }) => (
-      <thead className="bg-gray-700">{children}</thead>
-    ),
-    tbody: ({ children }) => (
-      <tbody className="bg-gray-800">{children}</tbody>
-    ),
+    thead: ({ children }) => <thead className="bg-gray-700">{children}</thead>,
+    tbody: ({ children }) => <tbody className="bg-gray-800">{children}</tbody>,
     tr: ({ children }) => (
       <tr className="border-b border-gray-600">{children}</tr>
     ),

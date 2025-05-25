@@ -1,15 +1,15 @@
 This is a study assitant that allows study of a pdf file along with an AI.
 
-When reading a pdf document instead of opening it up in a pdf viewer I will to open it up in my own program/web page. The layout is attached. 
+When reading a pdf document instead of opening it up in a pdf viewer I will to open it up in my own program/web page. The layout is attached.
 
 ![Layout](layout.webp)
 
 
 On the left pane I can read the pdf just like a normal pdf document. On the right pane, an AI is processing the page I am reading along with some more context and provides helpful hints to understand things. Bottom of the right pane is a chat panel where I can ask questions and the AI answers in the AI pane.
 
-We can assume the program is connected with a background ollama model running. I can run the ollama model using ollama. So the program just needs to communicate with that for AI functionality. 
+We can assume the program is connected with a background ollama model running. I can run the ollama model using ollama. So the program just needs to communicate with that for AI functionality.
 
-the pdfs are available in a local directory underneath the react app. 
+the pdfs are available in a local directory underneath the react app.
 
 ## Recommended Architecture:
 
@@ -63,5 +63,3 @@ the pdfs are available in a local directory underneath the react app.
 4. **WebSocket for Chat**: Real-time communication for the chat interface
 
 Would you like me to create a detailed implementation plan with specific libraries and code structure? I can also start with a basic proof-of-concept focusing on the core functionality.
-
-

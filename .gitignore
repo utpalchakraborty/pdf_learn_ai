@@ -387,4 +387,4 @@ gcloud-service-key.json
 .vercel/
 
 # Netlify
-.netlify/ 
+.netlify/

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import pdf, ai, notes
+from app.routers import ai, notes, pdf
 
 app = FastAPI(title="PDF AI Reader API", version="1.0.0")
 

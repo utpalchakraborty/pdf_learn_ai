@@ -1,5 +1,6 @@
+from typing import Any, Dict, List, Optional
+
 from fastapi import APIRouter, HTTPException
-from typing import List, Dict, Any, Optional
 from pydantic import BaseModel
 
 from ..services.database_service import db_service

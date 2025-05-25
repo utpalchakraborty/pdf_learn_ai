@@ -1,8 +1,8 @@
-import sqlite3
-import os
-from datetime import datetime
-from typing import Optional, Dict, Any
 import logging
+import os
+import sqlite3
+from datetime import datetime
+from typing import Any, Dict, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +45,7 @@ class DatabaseService:
 
             # Create index for faster lookups
             conn.execute("""
-                CREATE INDEX IF NOT EXISTS idx_chat_notes_pdf_page 
+                CREATE INDEX IF NOT EXISTS idx_chat_notes_pdf_page
                 ON chat_notes(pdf_filename, page_number)
             """)
 
@@ -59,7 +59,7 @@ class DatabaseService:
             with sqlite3.connect(self.db_path) as conn:
                 conn.execute(
                     """
-                    INSERT OR REPLACE INTO reading_progress 
+                    INSERT OR REPLACE INTO reading_progress
                     (pdf_filename, last_page, total_pages, last_updated)
                     VALUES (?, ?, ?, ?)
                 """,
@@ -82,7 +82,7 @@ class DatabaseService:
                 cursor = conn.execute(
                     """
                     SELECT pdf_filename, last_page, total_pages, last_updated
-                    FROM reading_progress 
+                    FROM reading_progress
                     WHERE pdf_filename = ?
                 """,
                     (pdf_filename,),
@@ -108,7 +108,7 @@ class DatabaseService:
                 conn.row_factory = sqlite3.Row
                 cursor = conn.execute("""
                     SELECT pdf_filename, last_page, total_pages, last_updated
-                    FROM reading_progress 
+                    FROM reading_progress
                     ORDER BY last_updated DESC
                 """)
 
@@ -164,7 +164,7 @@ class DatabaseService:
                     cursor = conn.execute(
                         """
                         SELECT id, pdf_filename, page_number, title, chat_content, created_at, updated_at
-                        FROM chat_notes 
+                        FROM chat_notes
                         WHERE pdf_filename = ? AND page_number = ?
                         ORDER BY created_at DESC
                     """,
@@ -174,7 +174,7 @@ class DatabaseService:
                     cursor = conn.execute(
                         """
                         SELECT id, pdf_filename, page_number, title, chat_content, created_at, updated_at
-                        FROM chat_notes 
+                        FROM chat_notes
                         WHERE pdf_filename = ?
                         ORDER BY page_number, created_at DESC
                     """,
@@ -207,7 +207,7 @@ class DatabaseService:
                 cursor = conn.execute(
                     """
                     SELECT id, pdf_filename, page_number, title, chat_content, created_at, updated_at
-                    FROM chat_notes 
+                    FROM chat_notes
                     WHERE id = ?
                 """,
                     (note_id,),
@@ -250,7 +250,7 @@ class DatabaseService:
                 conn.row_factory = sqlite3.Row
                 # Simplified query - get count and latest note separately
                 cursor = conn.execute("""
-                    SELECT 
+                    SELECT
                         pdf_filename,
                         COUNT(*) as notes_count,
                         MAX(created_at) as latest_note_date
@@ -263,8 +263,8 @@ class DatabaseService:
                     # Get the latest note title in a separate query
                     title_cursor = conn.execute(
                         """
-                        SELECT title 
-                        FROM chat_notes 
+                        SELECT title
+                        FROM chat_notes
                         WHERE pdf_filename = ? AND created_at = ?
                         LIMIT 1
                     """,

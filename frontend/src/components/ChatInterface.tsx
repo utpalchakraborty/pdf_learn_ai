@@ -220,9 +220,7 @@ export default function ChatInterface({
     strong: ({ children }) => (
       <strong className="text-gray-100 font-semibold">{children}</strong>
     ),
-    em: ({ children }) => (
-      <em className="text-gray-200 italic">{children}</em>
-    ),
+    em: ({ children }) => <em className="text-gray-200 italic">{children}</em>,
     ul: ({ children }) => (
       <ul className="text-sm text-gray-200 mb-1 pl-3 space-y-0.5 list-disc list-inside">
         {children}
@@ -233,9 +231,7 @@ export default function ChatInterface({
         {children}
       </ol>
     ),
-    li: ({ children }) => (
-      <li className="text-gray-200">{children}</li>
-    ),
+    li: ({ children }) => <li className="text-gray-200">{children}</li>,
     blockquote: ({ children }) => (
       <blockquote className="border-l-2 border-blue-400 pl-2 py-0.5 bg-blue-900/20 text-sm text-gray-200 italic">
         {children}
@@ -258,12 +254,8 @@ export default function ChatInterface({
         </table>
       </div>
     ),
-    thead: ({ children }) => (
-      <thead className="bg-gray-600">{children}</thead>
-    ),
-    tbody: ({ children }) => (
-      <tbody className="bg-gray-700">{children}</tbody>
-    ),
+    thead: ({ children }) => <thead className="bg-gray-600">{children}</thead>,
+    tbody: ({ children }) => <tbody className="bg-gray-700">{children}</tbody>,
     tr: ({ children }) => (
       <tr className="border-b border-gray-500">{children}</tr>
     ),
@@ -320,10 +312,11 @@ export default function ChatInterface({
               className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
             >
               <div
-                className={`max-w-xs lg:max-w-md px-3 py-2 rounded-lg text-sm ${message.isUser
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-700 text-gray-200'
-                  }`}
+                className={`max-w-xs lg:max-w-md px-3 py-2 rounded-lg text-sm ${
+                  message.isUser
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-700 text-gray-200'
+                }`}
               >
                 {message.isUser ? (
                   message.text

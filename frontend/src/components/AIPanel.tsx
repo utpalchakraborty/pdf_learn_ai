@@ -200,18 +200,18 @@ export default function AIPanel({ filename, currentPage }: AIPanelProps) {
     strong: ({ children }) => (
       <strong className="text-gray-200 font-semibold">{children}</strong>
     ),
-    em: ({ children }) => (
-      <em className="text-gray-300 italic">{children}</em>
-    ),
+    em: ({ children }) => <em className="text-gray-300 italic">{children}</em>,
     ul: ({ children }) => (
-      <ul className="text-sm text-gray-300 mb-2 pl-4 space-y-1 list-disc list-inside">{children}</ul>
+      <ul className="text-sm text-gray-300 mb-2 pl-4 space-y-1 list-disc list-inside">
+        {children}
+      </ul>
     ),
     ol: ({ children }) => (
-      <ol className="text-sm text-gray-300 mb-2 pl-4 space-y-1 list-decimal list-inside">{children}</ol>
+      <ol className="text-sm text-gray-300 mb-2 pl-4 space-y-1 list-decimal list-inside">
+        {children}
+      </ol>
     ),
-    li: ({ children }) => (
-      <li className="text-gray-300">{children}</li>
-    ),
+    li: ({ children }) => <li className="text-gray-300">{children}</li>,
     blockquote: ({ children }) => (
       <blockquote className="border-l-4 border-blue-500 pl-3 py-1 bg-blue-900/30 text-sm text-gray-300 italic">
         {children}
@@ -234,12 +234,8 @@ export default function AIPanel({ filename, currentPage }: AIPanelProps) {
         </table>
       </div>
     ),
-    thead: ({ children }) => (
-      <thead className="bg-gray-700">{children}</thead>
-    ),
-    tbody: ({ children }) => (
-      <tbody className="bg-gray-800">{children}</tbody>
-    ),
+    thead: ({ children }) => <thead className="bg-gray-700">{children}</thead>,
+    tbody: ({ children }) => <tbody className="bg-gray-800">{children}</tbody>,
     tr: ({ children }) => (
       <tr className="border-b border-gray-600">{children}</tr>
     ),
@@ -389,13 +385,19 @@ export default function AIPanel({ filename, currentPage }: AIPanelProps) {
                           span: ({ className, children, ...props }) => {
                             if (className?.includes('katex')) {
                               return (
-                                <span className={`${className} text-gray-300`} {...props}>
+                                <span
+                                  className={`${className} text-gray-300`}
+                                  {...props}
+                                >
                                   {children}
                                 </span>
                               );
                             }
                             return (
-                              <span className={`${className || ''} text-gray-400`} {...props}>
+                              <span
+                                className={`${className || ''} text-gray-400`}
+                                {...props}
+                              >
                                 {children}
                               </span>
                             );

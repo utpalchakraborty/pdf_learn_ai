@@ -1,8 +1,9 @@
+import json
+from typing import Any, Dict, List, Optional
+
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from typing import List, Dict, Any, Optional
-import json
 
 from ..services.ollama_service import OllamaService
 from ..services.pdf_service import PDFService
