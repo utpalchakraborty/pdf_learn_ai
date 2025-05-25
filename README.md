@@ -2,6 +2,67 @@
 
 A full-stack application for AI-powered PDF analysis and learning, built with FastAPI, React, and Ollama.
 
+## 📋 Table of Contents
+
+- [📚 What is PDF Learn AI?](#-what-is-pdf-learn-ai)
+  - [Key Features](#key-features)
+  - [How It Works](#how-it-works)
+- [🚀 Quick Start with Docker](#-quick-start-with-docker)
+  - [Prerequisites](#prerequisites)
+  - [Running the Application](#running-the-application)
+  - [First Run](#first-run)
+  - [Monitoring](#monitoring)
+  - [Stopping the Application](#stopping-the-application)
+- [🛠️ Development Setup](#️-development-setup)
+  - [Backend (FastAPI)](#backend-fastapi)
+  - [Frontend (React + Vite)](#frontend-react--vite)
+  - [Ollama](#ollama)
+- [📁 Project Structure](#-project-structure)
+- [🔧 Configuration](#-configuration)
+  - [Environment Variables](#environment-variables)
+  - [Ports](#ports)
+  - [Volumes](#volumes)
+- [🐛 Troubleshooting](#-troubleshooting)
+  - [Common Issues](#common-issues)
+  - [Health Checks](#health-checks)
+- [🤝 Contributing](#-contributing)
+- [📄 License](#-license)
+
+## 📚 What is PDF Learn AI?
+
+PDF Learn AI is an intelligent study assistant that transforms how you read and understand PDF documents. Instead of opening PDFs in a traditional viewer, this application provides an interactive learning environment where an AI companion helps you comprehend complex content in real-time.
+
+### Key Features
+
+**🏠 Smart Library Management**
+Browse and organize your PDF collection with an intuitive library interface.
+
+![Library Page](docs/images/LibraryPage.png)
+
+**📖 Enhanced Reading Experience**
+Read PDFs with AI-powered assistance that analyzes each page as you navigate through the document.
+
+![Reading Page](docs/images/Reading_page.png)
+
+**🤖 Intelligent AI Analysis**
+Get contextual insights, summaries, and explanations for the content you're reading. The AI processes the current page along with surrounding context to provide relevant assistance.
+
+![Chat Panel](docs/images/Chat_Panel.png)
+
+**📝 Interactive Note-Taking**
+Ask questions, take notes, and engage in conversations about the document content. The AI maintains context throughout your reading session.
+
+![Notes](docs/images/Notes.png)
+
+### How It Works
+
+1. **Upload or Select PDFs**: Choose from your local PDF collection
+2. **AI-Powered Reading**: As you read, the AI analyzes each page and provides helpful insights
+3. **Interactive Chat**: Ask questions about the content and get instant, contextual answers
+4. **Smart Notes**: Take notes and let the AI help you understand complex concepts
+
+The application uses Ollama for local AI processing, ensuring your documents stay private while providing powerful language model capabilities.
+
 ## 🚀 Quick Start with Docker
 
 The easiest way to run this application is using Docker Compose. This will automatically set up all required services including the backend API, frontend web app, and Ollama AI models.
@@ -186,10 +247,6 @@ docker compose ps
 
 Healthy services will show "healthy" status.
 
-## 📝 API Documentation
-
-Once the backend is running, visit http://localhost:8000/docs for interactive API documentation.
-
 ## 🤝 Contributing
 
 1. Fork the repository
@@ -200,4 +257,12 @@ Once the backend is running, visit http://localhost:8000/docs for interactive AP
 
 ## 📄 License
 
-[Add your license information here]
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+The MIT License is one of the most permissive open source licenses, allowing you to:
+- ✅ Use the software for any purpose (commercial or personal)
+- ✅ Modify and distribute the software
+- ✅ Include it in proprietary software
+- ✅ Sell copies of the software
+
+The only requirement is to include the original copyright notice and license text in any copies or substantial portions of the software.
