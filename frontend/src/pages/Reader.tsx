@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import PDFViewer from '../components/PDFViewer';
-import AIPanel from '../components/AIPanel';
-import ChatInterface from '../components/ChatInterface';
-import ResizablePanels from '../components/ResizablePanels';
+import TabbedRightPanel from '../components/TabbedRightPanel';
+import SimpleResizablePanels from '../components/SimpleResizablePanels';
 import { pdfService } from '../services/api';
 
 export default function Reader() {
@@ -115,7 +114,7 @@ export default function Reader() {
         </div>
       </div>
 
-      <ResizablePanels
+      <SimpleResizablePanels
         leftPanel={
           <PDFViewer
             filename={filename}
@@ -124,14 +123,8 @@ export default function Reader() {
             onTotalPagesChange={handleTotalPagesChange}
           />
         }
-        rightTopPanel={
-          <AIPanel
-            filename={filename}
-            currentPage={currentPage}
-          />
-        }
-        rightBottomPanel={
-          <ChatInterface
+        rightPanel={
+          <TabbedRightPanel
             filename={filename}
             currentPage={currentPage}
           />
