@@ -82,7 +82,7 @@ export default function NotesPanel({ filename, currentPage }: NotesPanelProps) {
     code: ({ className, children, ...props }) => {
       return (
         <code
-          className={`${className} bg-gray-700 text-gray-200 px-1 py-0.5 rounded text-xs font-mono`}
+          className={`${className || ''} bg-gray-700 text-gray-200 px-1 py-0.5 rounded text-xs font-mono`}
           {...props}
         >
           {children}
@@ -98,7 +98,7 @@ export default function NotesPanel({ filename, currentPage }: NotesPanelProps) {
         );
       }
       return (
-        <span className={className} {...props}>
+        <span className={`${className || ''} text-gray-300`} {...props}>
           {children}
         </span>
       );
@@ -118,11 +118,86 @@ export default function NotesPanel({ filename, currentPage }: NotesPanelProps) {
         {children}
       </h2>
     ),
+    h3: ({ children }) => (
+      <h3 className="text-sm font-medium text-gray-200 mt-2 mb-1 first:mt-0">
+        {children}
+      </h3>
+    ),
+    h4: ({ children }) => (
+      <h4 className="text-xs font-medium text-gray-300 mt-2 mb-1 first:mt-0">
+        {children}
+      </h4>
+    ),
+    h5: ({ children }) => (
+      <h5 className="text-xs font-medium text-gray-300 mt-1 mb-1 first:mt-0">
+        {children}
+      </h5>
+    ),
+    h6: ({ children }) => (
+      <h6 className="text-xs font-medium text-gray-400 mt-1 mb-1 first:mt-0">
+        {children}
+      </h6>
+    ),
     p: ({ children }) => (
       <p className="text-xs text-gray-300 leading-relaxed mb-2">{children}</p>
     ),
     strong: ({ children }) => (
       <strong className="text-gray-200 font-semibold">{children}</strong>
+    ),
+    em: ({ children }) => (
+      <em className="text-gray-300 italic">{children}</em>
+    ),
+    ul: ({ children }) => (
+      <ul className="text-xs text-gray-300 list-disc list-inside mb-2 space-y-1">
+        {children}
+      </ul>
+    ),
+    ol: ({ children }) => (
+      <ol className="text-xs text-gray-300 list-decimal list-inside mb-2 space-y-1">
+        {children}
+      </ol>
+    ),
+    li: ({ children }) => (
+      <li className="text-gray-300">{children}</li>
+    ),
+    blockquote: ({ children }) => (
+      <blockquote className="border-l-2 border-gray-600 pl-3 text-xs text-gray-400 italic mb-2">
+        {children}
+      </blockquote>
+    ),
+    a: ({ href, children }) => (
+      <a
+        href={href}
+        className="text-blue-400 hover:text-blue-300 underline"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {children}
+      </a>
+    ),
+    table: ({ children }) => (
+      <div className="overflow-x-auto mb-2">
+        <table className="min-w-full text-xs text-gray-300 border border-gray-600">
+          {children}
+        </table>
+      </div>
+    ),
+    thead: ({ children }) => (
+      <thead className="bg-gray-700">{children}</thead>
+    ),
+    tbody: ({ children }) => (
+      <tbody className="bg-gray-800">{children}</tbody>
+    ),
+    tr: ({ children }) => (
+      <tr className="border-b border-gray-600">{children}</tr>
+    ),
+    th: ({ children }) => (
+      <th className="px-2 py-1 text-left text-gray-200 font-medium">
+        {children}
+      </th>
+    ),
+    td: ({ children }) => (
+      <td className="px-2 py-1 text-gray-300">{children}</td>
     ),
   } as Components;
 
@@ -227,7 +302,7 @@ export default function NotesPanel({ filename, currentPage }: NotesPanelProps) {
                         </button>
                         {expandedNote === note.id && (
                           <div className="mt-3 pt-3 border-t border-gray-700">
-                            <div className="prose prose-sm prose-gray max-w-none">
+                            <div className="max-w-none text-gray-300">
                               <ReactMarkdown
                                 remarkPlugins={[remarkGfm, remarkMath]}
                                 rehypePlugins={[rehypeHighlight, rehypeKatex]}
@@ -309,7 +384,7 @@ export default function NotesPanel({ filename, currentPage }: NotesPanelProps) {
                           </button>
                           {expandedNote === note.id && (
                             <div className="mt-3 pt-3 border-t border-gray-700">
-                              <div className="prose prose-sm prose-gray max-w-none">
+                              <div className="max-w-none text-gray-300">
                                 <ReactMarkdown
                                   remarkPlugins={[remarkGfm, remarkMath]}
                                   rehypePlugins={[rehypeHighlight, rehypeKatex]}

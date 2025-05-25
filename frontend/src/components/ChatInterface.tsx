@@ -157,7 +157,7 @@ export default function ChatInterface({
     code: ({ className, children, ...props }) => {
       return (
         <code
-          className={`${className} bg-gray-600 text-gray-100 px-1 py-0.5 rounded text-xs font-mono`}
+          className={`${className || ''} bg-gray-600 text-gray-100 px-1 py-0.5 rounded text-xs font-mono`}
           {...props}
         >
           {children}
@@ -174,7 +174,7 @@ export default function ChatInterface({
         );
       }
       return (
-        <span className={className} {...props}>
+        <span className={`${className || ''} text-gray-200`} {...props}>
           {children}
         </span>
       );
@@ -199,23 +199,81 @@ export default function ChatInterface({
         {children}
       </h3>
     ),
+    h4: ({ children }) => (
+      <h4 className="text-xs font-medium text-gray-200 mt-2 mb-1 first:mt-0">
+        {children}
+      </h4>
+    ),
+    h5: ({ children }) => (
+      <h5 className="text-xs font-medium text-gray-200 mt-1 mb-1 first:mt-0">
+        {children}
+      </h5>
+    ),
+    h6: ({ children }) => (
+      <h6 className="text-xs font-medium text-gray-300 mt-1 mb-1 first:mt-0">
+        {children}
+      </h6>
+    ),
     p: ({ children }) => (
       <p className="text-sm text-gray-200 leading-relaxed mb-1">{children}</p>
     ),
+    strong: ({ children }) => (
+      <strong className="text-gray-100 font-semibold">{children}</strong>
+    ),
+    em: ({ children }) => (
+      <em className="text-gray-200 italic">{children}</em>
+    ),
     ul: ({ children }) => (
-      <ul className="text-sm text-gray-200 mb-1 pl-3 space-y-0.5">
+      <ul className="text-sm text-gray-200 mb-1 pl-3 space-y-0.5 list-disc list-inside">
         {children}
       </ul>
     ),
     ol: ({ children }) => (
-      <ol className="text-sm text-gray-200 mb-1 pl-3 space-y-0.5">
+      <ol className="text-sm text-gray-200 mb-1 pl-3 space-y-0.5 list-decimal list-inside">
         {children}
       </ol>
+    ),
+    li: ({ children }) => (
+      <li className="text-gray-200">{children}</li>
     ),
     blockquote: ({ children }) => (
       <blockquote className="border-l-2 border-blue-400 pl-2 py-0.5 bg-blue-900/20 text-sm text-gray-200 italic">
         {children}
       </blockquote>
+    ),
+    a: ({ href, children }) => (
+      <a
+        href={href}
+        className="text-blue-300 hover:text-blue-200 underline"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {children}
+      </a>
+    ),
+    table: ({ children }) => (
+      <div className="overflow-x-auto mb-2">
+        <table className="min-w-full text-sm text-gray-200 border border-gray-500">
+          {children}
+        </table>
+      </div>
+    ),
+    thead: ({ children }) => (
+      <thead className="bg-gray-600">{children}</thead>
+    ),
+    tbody: ({ children }) => (
+      <tbody className="bg-gray-700">{children}</tbody>
+    ),
+    tr: ({ children }) => (
+      <tr className="border-b border-gray-500">{children}</tr>
+    ),
+    th: ({ children }) => (
+      <th className="px-2 py-1 text-left text-gray-100 font-medium">
+        {children}
+      </th>
+    ),
+    td: ({ children }) => (
+      <td className="px-2 py-1 text-gray-200">{children}</td>
     ),
   } as Components;
 
@@ -262,16 +320,15 @@ export default function ChatInterface({
               className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
             >
               <div
-                className={`max-w-xs lg:max-w-md px-3 py-2 rounded-lg text-sm ${
-                  message.isUser
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-700 text-gray-200'
-                }`}
+                className={`max-w-xs lg:max-w-md px-3 py-2 rounded-lg text-sm ${message.isUser
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-700 text-gray-200'
+                  }`}
               >
                 {message.isUser ? (
                   message.text
                 ) : (
-                  <div className="prose prose-sm prose-gray max-w-none">
+                  <div className="max-w-none text-gray-200">
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm, remarkMath]}
                       rehypePlugins={[rehypeHighlight, rehypeKatex]}

@@ -137,7 +137,7 @@ export default function AIPanel({ filename, currentPage }: AIPanelProps) {
     code: ({ className, children, ...props }) => {
       return (
         <code
-          className={`${className} bg-gray-700 text-gray-200 px-1 py-0.5 rounded text-xs font-mono`}
+          className={`${className || ''} bg-gray-700 text-gray-200 px-1 py-0.5 rounded text-xs font-mono`}
           {...props}
         >
           {children}
@@ -154,7 +154,7 @@ export default function AIPanel({ filename, currentPage }: AIPanelProps) {
         );
       }
       return (
-        <span className={className} {...props}>
+        <span className={`${className || ''} text-gray-300`} {...props}>
           {children}
         </span>
       );
@@ -179,19 +179,77 @@ export default function AIPanel({ filename, currentPage }: AIPanelProps) {
         {children}
       </h3>
     ),
+    h4: ({ children }) => (
+      <h4 className="text-sm font-medium text-gray-200 mt-2 mb-1 first:mt-0">
+        {children}
+      </h4>
+    ),
+    h5: ({ children }) => (
+      <h5 className="text-sm font-medium text-gray-200 mt-1 mb-1 first:mt-0">
+        {children}
+      </h5>
+    ),
+    h6: ({ children }) => (
+      <h6 className="text-sm font-medium text-gray-300 mt-1 mb-1 first:mt-0">
+        {children}
+      </h6>
+    ),
     p: ({ children }) => (
       <p className="text-sm text-gray-300 leading-relaxed mb-2">{children}</p>
     ),
+    strong: ({ children }) => (
+      <strong className="text-gray-200 font-semibold">{children}</strong>
+    ),
+    em: ({ children }) => (
+      <em className="text-gray-300 italic">{children}</em>
+    ),
     ul: ({ children }) => (
-      <ul className="text-sm text-gray-300 mb-2 pl-4 space-y-1">{children}</ul>
+      <ul className="text-sm text-gray-300 mb-2 pl-4 space-y-1 list-disc list-inside">{children}</ul>
     ),
     ol: ({ children }) => (
-      <ol className="text-sm text-gray-300 mb-2 pl-4 space-y-1">{children}</ol>
+      <ol className="text-sm text-gray-300 mb-2 pl-4 space-y-1 list-decimal list-inside">{children}</ol>
+    ),
+    li: ({ children }) => (
+      <li className="text-gray-300">{children}</li>
     ),
     blockquote: ({ children }) => (
       <blockquote className="border-l-4 border-blue-500 pl-3 py-1 bg-blue-900/30 text-sm text-gray-300 italic">
         {children}
       </blockquote>
+    ),
+    a: ({ href, children }) => (
+      <a
+        href={href}
+        className="text-blue-400 hover:text-blue-300 underline"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {children}
+      </a>
+    ),
+    table: ({ children }) => (
+      <div className="overflow-x-auto mb-2">
+        <table className="min-w-full text-sm text-gray-300 border border-gray-600">
+          {children}
+        </table>
+      </div>
+    ),
+    thead: ({ children }) => (
+      <thead className="bg-gray-700">{children}</thead>
+    ),
+    tbody: ({ children }) => (
+      <tbody className="bg-gray-800">{children}</tbody>
+    ),
+    tr: ({ children }) => (
+      <tr className="border-b border-gray-600">{children}</tr>
+    ),
+    th: ({ children }) => (
+      <th className="px-2 py-1 text-left text-gray-200 font-medium">
+        {children}
+      </th>
+    ),
+    td: ({ children }) => (
+      <td className="px-2 py-1 text-gray-300">{children}</td>
     ),
   } as Components;
 
@@ -267,7 +325,7 @@ export default function AIPanel({ filename, currentPage }: AIPanelProps) {
             )}
 
             {/* Main Analysis */}
-            <div className="prose prose-sm prose-gray max-w-none">
+            <div className="max-w-none text-gray-300">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm, remarkMath]}
                 rehypePlugins={[rehypeHighlight, rehypeKatex]}
@@ -307,7 +365,7 @@ export default function AIPanel({ filename, currentPage }: AIPanelProps) {
 
                 {showThinking && (
                   <div className="mt-3 p-3 bg-gray-800 rounded-md border border-gray-700">
-                    <div className="prose prose-sm prose-gray max-w-none">
+                    <div className="max-w-none text-gray-400">
                       <ReactMarkdown
                         remarkPlugins={[remarkGfm, remarkMath]}
                         rehypePlugins={[rehypeHighlight, rehypeKatex]}
@@ -328,6 +386,20 @@ export default function AIPanel({ filename, currentPage }: AIPanelProps) {
                               {children}
                             </h2>
                           ),
+                          span: ({ className, children, ...props }) => {
+                            if (className?.includes('katex')) {
+                              return (
+                                <span className={`${className} text-gray-300`} {...props}>
+                                  {children}
+                                </span>
+                              );
+                            }
+                            return (
+                              <span className={`${className || ''} text-gray-400`} {...props}>
+                                {children}
+                              </span>
+                            );
+                          },
                         }}
                       >
                         {thinkingContent}
