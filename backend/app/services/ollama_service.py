@@ -3,15 +3,20 @@ from typing import AsyncGenerator, Dict, Any
 from openai import AsyncOpenAI
 import json
 
+
 class OllamaService:
-    def __init__(self, base_url: str = "http://localhost:11434/v1", model: str = "qwen3:30b"):
+    def __init__(
+        self, base_url: str = "http://localhost:11434/v1", model: str = "qwen3:30b"
+    ):
         self.client = AsyncOpenAI(
             base_url=base_url,
-            api_key="ollama"  # Ollama doesn't require a real API key
+            api_key="ollama",  # Ollama doesn't require a real API key
         )
         self.model = model
-    
-    async def analyze_page(self, text: str, filename: str, page_num: int, context: str = "") -> str:
+
+    async def analyze_page(
+        self, text: str, filename: str, page_num: int, context: str = ""
+    ) -> str:
         """
         Analyze a PDF page using AI
         """
@@ -43,17 +48,24 @@ Provide a helpful analysis that will aid in understanding this content."""
                 model=self.model,
                 messages=[
                     {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt}
+                    {"role": "user", "content": user_prompt},
                 ],
-                temperature=0.7
+                temperature=0.7,
             )
-            
+
             return response.choices[0].message.content.strip()
-            
+
         except Exception as e:
             raise Exception(f"Failed to analyze page: {str(e)}")
-    
-    async def chat_stream(self, message: str, filename: str, page_num: int, pdf_text: str, chat_history: list = None) -> AsyncGenerator[str, None]:
+
+    async def chat_stream(
+        self,
+        message: str,
+        filename: str,
+        page_num: int,
+        pdf_text: str,
+        chat_history: list = None,
+    ) -> AsyncGenerator[str, None]:
         """
         Stream chat responses about the PDF content
         """
@@ -63,7 +75,7 @@ Provide a helpful analysis that will aid in understanding this content."""
 Current context:
 - Document: {filename}
 - Current page: {page_num}
-- Page content: {pdf_text[:2000]}{'...' if len(pdf_text) > 2000 else ''}
+- Page content: {pdf_text[:2000]}{"..." if len(pdf_text) > 2000 else ""}
 
 You should:
 1. Answer questions directly related to the PDF content
@@ -75,11 +87,11 @@ You should:
 Keep responses conversational but informative."""
 
         messages = [{"role": "system", "content": system_prompt}]
-        
+
         # Add chat history if provided
         if chat_history:
             messages.extend(chat_history[-10:])  # Keep last 10 messages for context
-        
+
         # Add current message
         messages.append({"role": "user", "content": message})
 
@@ -89,16 +101,16 @@ Keep responses conversational but informative."""
                 messages=messages,
                 temperature=0.7,
                 # max_tokens=800,
-                stream=True
+                stream=True,
             )
-            
+
             async for chunk in stream:
                 if chunk.choices[0].delta.content:
                     yield chunk.choices[0].delta.content
-                    
+
         except Exception as e:
             yield f"Error: {str(e)}"
-    
+
     async def test_connection(self) -> Dict[str, Any]:
         """
         Test connection to Ollama
@@ -109,20 +121,19 @@ Keep responses conversational but informative."""
                 messages=[{"role": "user", "content": "Hello, are you working?"}],
                 # max_tokens=50
             )
-            
+
             return {
                 "status": "connected",
                 "model": self.model,
-                "response": response.choices[0].message.content
-            }
-            
-        except Exception as e:
-            return {
-                "status": "error",
-                "error": str(e)
+                "response": response.choices[0].message.content,
             }
 
-    async def analyze_page_stream(self, text: str, filename: str, page_num: int, context: str = "") -> AsyncGenerator[str, None]:
+        except Exception as e:
+            return {"status": "error", "error": str(e)}
+
+    async def analyze_page_stream(
+        self, text: str, filename: str, page_num: int, context: str = ""
+    ) -> AsyncGenerator[str, None]:
         """
         Analyze a PDF page using AI with streaming response
         """
@@ -154,15 +165,15 @@ Provide a helpful analysis that will aid in understanding this content."""
                 model=self.model,
                 messages=[
                     {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt}
+                    {"role": "user", "content": user_prompt},
                 ],
                 temperature=0.7,
-                stream=True
+                stream=True,
             )
-            
+
             async for chunk in stream:
                 if chunk.choices[0].delta.content:
                     yield chunk.choices[0].delta.content
-                    
+
         except Exception as e:
             yield f"Error: {str(e)}"
