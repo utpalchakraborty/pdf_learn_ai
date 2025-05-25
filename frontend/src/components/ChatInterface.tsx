@@ -29,6 +29,10 @@ export default function ChatInterface({ filename, currentPage }: ChatInterfacePr
   const [streaming, setStreaming] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  const clearChat = () => {
+    setMessages([]);
+  };
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -97,7 +101,7 @@ export default function ChatInterface({ filename, currentPage }: ChatInterfacePr
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
@@ -168,10 +172,19 @@ export default function ChatInterface({ filename, currentPage }: ChatInterfacePr
   return (
     <div className="h-full flex flex-col bg-gray-900 border-t border-gray-700">
       {/* Header */}
-      <div className="border-b border-gray-700 px-4 py-2 bg-gray-800">
+      <div className="border-b border-gray-700 px-4 py-2 bg-gray-800 flex justify-between items-center">
         <h3 className="text-sm font-medium text-gray-200">
           Chat about {filename ? `${filename} (Page ${currentPage})` : 'PDF'}
         </h3>
+        {messages.length > 0 && (
+          <button
+            onClick={clearChat}
+            className="px-3 py-1 text-xs bg-gray-600 text-gray-200 rounded hover:bg-gray-500 transition-colors"
+            title="Clear chat"
+          >
+            Clear Chat
+          </button>
+        )}
       </div>
 
       {/* Messages */}
@@ -226,7 +239,7 @@ export default function ChatInterface({ filename, currentPage }: ChatInterfacePr
             type="text"
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyDown}
             placeholder={filename ? "Ask about this PDF..." : "Open a PDF to chat"}
             disabled={!filename || loading}
             className="flex-1 px-3 py-2 border border-gray-600 bg-gray-800 text-gray-200 placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-700 disabled:text-gray-500"
