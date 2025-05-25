@@ -1,3 +1,10 @@
+export interface ReadingProgress {
+  last_page: number;
+  total_pages: number;
+  progress_percentage: number;
+  last_updated: string;
+}
+
 export interface PDF {
   filename: string;
   title: string;
@@ -6,6 +13,7 @@ export interface PDF {
   file_size: number;
   modified_date: string;
   created_date: string;
+  reading_progress?: ReadingProgress | null;
   error?: string;
 }
 

@@ -132,6 +132,26 @@ export default function Library() {
                     </div>
                   </div>
 
+                  {pdf.reading_progress && (
+                    <div className="mt-4 pt-3 border-t border-slate-600/50">
+                      <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
+                        <span>Reading Progress</span>
+                        <span className="text-purple-400 font-medium">
+                          {pdf.reading_progress.progress_percentage}%
+                        </span>
+                      </div>
+                      <div className="w-full bg-slate-700/50 rounded-full h-2 overflow-hidden">
+                        <div 
+                          className="bg-gradient-to-r from-purple-500 to-blue-500 h-full rounded-full transition-all duration-300"
+                          style={{ width: `${pdf.reading_progress.progress_percentage}%` }}
+                        ></div>
+                      </div>
+                      <div className="text-xs text-slate-500 mt-1">
+                        Page {pdf.reading_progress.last_page} of {pdf.reading_progress.total_pages}
+                      </div>
+                    </div>
+                  )}
+
                   {pdf.error && (
                     <div className="mt-3 text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg p-2">
                       ⚠️ {pdf.error}

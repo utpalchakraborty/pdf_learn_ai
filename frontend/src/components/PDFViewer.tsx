@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
@@ -13,11 +13,36 @@ interface PDFViewerProps {
   onTotalPagesChange?: (totalPages: number) => void;
 }
 
+// Helper function to get saved zoom or default
+const getSavedZoom = (): number => {
+  try {
+    const savedZoom = localStorage.getItem('pdf-viewer-zoom');
+    if (savedZoom) {
+      const zoomValue = parseFloat(savedZoom);
+      if (zoomValue >= 0.5 && zoomValue <= 3.0) {
+        return zoomValue;
+      }
+    }
+  } catch (error) {
+    console.warn('Error reading zoom from localStorage:', error);
+  }
+  return 1.0; // Default 100% zoom
+};
+
 export default function PDFViewer({ filename, currentPage, onPageChange, onTotalPagesChange }: PDFViewerProps) {
   const [numPages, setNumPages] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [scale, setScale] = useState<number>(1.2); // Default zoom level
+  const [scale, setScale] = useState<number>(getSavedZoom()); // Initialize directly from localStorage
+
+  // Save zoom level to localStorage whenever it changes
+  useEffect(() => {
+    try {
+      localStorage.setItem('pdf-viewer-zoom', scale.toString());
+    } catch (error) {
+      console.warn('Error saving zoom to localStorage:', error);
+    }
+  }, [scale]);
 
   const onDocumentLoadSuccess = useCallback(({ numPages }: { numPages: number }) => {
     setNumPages(numPages);
@@ -52,7 +77,7 @@ export default function PDFViewer({ filename, currentPage, onPageChange, onTotal
   };
 
   const resetZoom = () => {
-    setScale(1.2);
+    setScale(1.0);
   };
 
   if (!filename) {

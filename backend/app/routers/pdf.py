@@ -21,10 +21,26 @@ class ReadingProgressRequest(BaseModel):
 @router.get("/list")
 async def list_pdfs() -> List[Dict[str, Any]]:
     """
-    List all PDFs in the pdfs directory with metadata
+    List all PDFs in the pdfs directory with metadata and reading progress
     """
     try:
         pdfs = pdf_service.list_pdfs()
+        all_progress = db_service.get_all_reading_progress()
+        
+        # Add reading progress to each PDF
+        for pdf in pdfs:
+            filename = pdf.get('filename')
+            if filename and filename in all_progress:
+                progress = all_progress[filename]
+                pdf['reading_progress'] = {
+                    'last_page': progress['last_page'],
+                    'total_pages': progress['total_pages'],
+                    'progress_percentage': round((progress['last_page'] / progress['total_pages']) * 100) if progress['total_pages'] else 0,
+                    'last_updated': progress['last_updated']
+                }
+            else:
+                pdf['reading_progress'] = None
+                
         return pdfs
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error listing PDFs: {str(e)}")
